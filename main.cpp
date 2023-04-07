@@ -189,5 +189,7 @@ int main2() {
     std::cout << BG::intersects(poly2, poly3) << std::endl;
     std::cout << BG::within(poly2, poly3) << std::endl;
 
+    std::cout << 123321 << std::endl;
+
     return 0;
 }
