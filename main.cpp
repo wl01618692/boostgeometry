@@ -17,6 +17,7 @@
 #include "greedy.h"
 #include "stack_queue.h"
 #include "hashTable.h"
+#include "unionfind.h"
 
 using namespace std;
 class A {
@@ -139,6 +140,8 @@ int rvalue_test() {
 
 int main() {
     std::vector<double> dd = {1, 2, 3};
+    std::pair<int, int> p1 = {1, 2};
+    auto ks = std::get<0> (p1);
     std::cout << std::distance(dd.begin(), dd.end()) << std::endl;
     std::cout << int('a') << std::endl;
     std::vector<double> k;
@@ -169,9 +172,21 @@ int main() {
     maxSlidingWindow(kkk, 3);
     std::cout << isAnagram("anagram", "nagaram");
     std::cout << isHappy(1);
+    std::vector<std::vector<int>> edges;
+    std::vector<int> i1 = {1, 4};
+    std::vector<int> i2 = {3, 4};
+    std::vector<int> i3 = {1, 3};
+    std::vector<int> i4 = {1, 2};
+    std::vector<int> i5 = {4, 5};
 
-
-
+    // [[1,4],[3,4],[1,3],[1,2],[4,5]]
+    edges.push_back(i1);
+    edges.push_back(i2);
+    edges.push_back(i3);
+    edges.push_back(i4);
+    edges.push_back(i5);
+    findRedundantConnection(edges);
+    monotoneIncreasingDigits(41114111);
     int a = 10;
     int &b = a;  // 定义一个左值引用变量
     b = 20;      // 通过左值引用修改引用内存的值

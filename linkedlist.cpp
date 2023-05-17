@@ -22,6 +22,24 @@ void linkedlist_test () {
     l1.addAtTail(5);
     l1.ans143(l1._head);
     int ll = 0;
+
+
+    LinkedList l2;
+    l2.addAtHead(1);
+    l2.addAtTail(2);
+    l2.addAtTail(3);
+    l2.addAtTail(4);
+    l2.swapNodePair(l2._head);
+    int kk = 0;
+
+    LinkedList l3;
+    l3.addAtHead(1);
+    l3.addAtTail(2);
+    l3.addAtTail(3);
+    l3.addAtTail(4);
+    l3.addAtTail(5);
+    l3.rotateRight(l3._head, 6);
+    int kl = 0;
 }
 
 

@@ -345,6 +345,74 @@ public:
         }
     }
 
+    // swapNodes in pair
+    // 24
+    // Input: head = [1,2,3,4]
+    // Output: [2,1,4,3]
+    LinkedNode* swapNodePair(LinkedNode* head) {
+        if (head == nullptr) return nullptr;
+        if (head->next == nullptr) return head;
+        LinkedNode* dummyHead = new LinkedNode();
+        dummyHead->next = head;
+        LinkedNode* prev = dummyHead;
+        LinkedNode* curNode = head;
+
+        while (curNode != nullptr && curNode->next != nullptr) {
+            prev->next = curNode->next;
+            auto tmp = curNode->next->next;
+            curNode->next->next = curNode;
+            curNode->next = tmp;
+            prev = curNode;
+            curNode = tmp;
+        }
+
+        return dummyHead->next;
+    }
+
+    // Rotate List
+    // 61
+    // Input: head = [1,2,3,4,5], k = 2
+    // Output: [4,5,1,2,3]
+
+    LinkedNode* rotateRight(LinkedNode* head, int k) {
+        if (head == nullptr) return nullptr;
+        int length = 0;
+        auto tmp = head;
+        while (tmp != nullptr) {
+            tmp = tmp->next;
+            ++length;
+        }
+
+        while (k >= length) {
+            k -= length;
+        }
+
+        if (k == 0) return head;
+
+        LinkedNode* dummyHead = new LinkedNode();
+        dummyHead->next = head;
+        auto slow = dummyHead;
+        auto fast = dummyHead;
+        for (int i = 0; i <= k; ++i) {
+            fast = fast->next;
+        }
+        while (fast != nullptr) {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        delete dummyHead;
+
+        auto curNode = slow->next;
+        auto prevStart = head;
+        slow->next = nullptr;
+        head = curNode;
+        while (curNode->next != nullptr) {
+            curNode = curNode->next;
+        }
+        curNode->next = prevStart;
+        return head;
+    }
+
 //private:
     LinkedNode* _head = nullptr;
     size_t _count = 0;

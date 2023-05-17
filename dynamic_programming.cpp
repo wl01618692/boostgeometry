@@ -285,6 +285,57 @@ int trapWater1(std::vector<int> height) {
     return res;
 }
 
+/// 64
+// Input: grid = [[1,3,1],[1,5,1],[4,2,1]]
+// Output: 7
+// Explanation: Because the path 1 → 3 → 1 → 1 → 1 minimizes the sum.
+
+// Input: grid = [[1,2,3],[4,5,6]]
+// Output: 12
+int minPathSum(std::vector<std::vector<int>>& grid) {
+    int m = grid.size();
+    int n = grid[0].size();
+    std::vector<std::vector<int>> dp(m, std::vector<int> (n, 0));
+
+    dp[0][0] = grid[0][0];
+    for (int i = 1; i < m; ++i) {
+        dp[i][0] = grid[i][0] + dp[i - 1][0];
+    }
+    for (int i = 1; i < n; ++i) {
+        dp[0][i] = grid[0][i] + dp[0][i - 1];
+    }
+
+    for (int i = 1; i < m; ++i) {
+        for (int j = 1; j < n; ++j) {
+            dp[i][j] = std::min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+        }
+    }
+
+    return dp[m - 1][n - 1];
+}
+
+int minPathSumOptimized(std::vector<std::vector<int>>& grid) {
+    int m = grid.size();
+    int n = grid[0].size();
+    std::vector<int> dp(n, 0);
+
+    dp[0] = grid[0][0];
+    for (int i = 1; i < n; ++i) {
+        dp[i] = grid[0][i] + dp[i - 1];
+    }
+
+    for (int i = 1; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (j == 0) {
+                dp[j] = dp[0] + grid[i][0];
+            } else {
+                dp[j] = std::min(dp[j - 1], dp[j]) + grid[i][j];
+            }
+        }
+    }
+
+    return dp[n - 1];
+}
 
 void test_dp() {
     std::cout << fib(2) << std::endl;
@@ -298,5 +349,22 @@ void test_dp() {
     std::cout << stairCase(6) << std::endl;
     std::cout << minDis("horse", "ros") << std::endl;
     std::vector<int> v = {0,1,0,2,1,0,1,3,2,1,2,1};
+
+    std::vector<int> v1 = {1, 3, 1};
+    std::vector<int> v2 = {1, 5, 1};
+    std::vector<int> v3 = {4, 2, 1};
+    std::vector<std::vector<int>> grid;
+    grid.push_back(v1);
+    grid.push_back(v2);
+    grid.push_back(v3);
+    minPathSumOptimized(grid);
+
+    std::vector<int> k1 = {1, 2, 3};
+    std::vector<int> k2 = {4, 5, 6};
+    grid.clear();
+    grid.push_back(k1);
+    grid.push_back(k2);
+    minPathSumOptimized(grid);
+
     trapWater1(v);
 }

@@ -7,4 +7,5 @@
 #include "Util.h"
 int distriuteCookie(std::vector<int>& g, std::vector<int>& s);
 int integerReplacement(int n);
+int monotoneIncreasingDigits(int N);
 #endif //BOOSTGEOMETRY_GREEDY_H
