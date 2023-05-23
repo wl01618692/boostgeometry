@@ -2,6 +2,8 @@
 // Created by zhangjiayuan on 23-4-28.
 //
 
+#include <algorithm>
+#include <numeric>
 #include "dynamic_programming.h"
 int fib(int N) {
     if (N <= 1) return N;
@@ -209,6 +211,7 @@ int bagWeight_optimized() {
     std::cout << dp[bagWeight] << std::endl;
 }
 
+/// 416
 // 给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
 //
 // 注意: 每个数组中的元素不会超过 100 数组的大小不会超过 200
@@ -230,14 +233,43 @@ int bagWeight_optimized() {
 //    1 <= nums.length <= 200
 //    1 <= nums[i] <= 100
 //
-// 416
 
-// 01 backpack
-// bagweight = sum / 2
-// use each element once
-// value = weight
+//01背包中，dp[j] 表示： 容量为j的背包，所背的物品价值最大可以为dp[j]。
 //
+//本题中每一个元素的数值既是重量，也是价值。
+//
+//套到本题，dp[j]表示 背包总容量（所能装的总重量）是j，放进物品后，背的最大重量为dp[j]。
+//
+//那么如果背包容量为target， dp[target]就是装满 背包之后的重量，所以 当 dp[target] == target 的时候，背包就装满了。
+//拿输入数组 [1, 5, 11, 5]，举例， dp[7] 只能等于 6，因为 只能放进 1 和 5。
+//
+//而dp[6] 就可以等于6了，放进1 和 5，那么dp[6] == 6，说明背包装满了。
+//
+//01背包的递推公式为：dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);
+//
+//本题，相当于背包里放入数值，那么物品i的重量是nums[i]，其价值也是nums[i]。
+//
+//所以递推公式：dp[j] = max(dp[j], dp[j - nums[i]] + nums[i]);
+bool lc416(std::vector<int> nums) {
+    int sum = std::accumulate(nums.begin(), nums.end(), 0);
+    int bagWeight = sum / 2; // 11
 
+    std::vector<int> dp(bagWeight + 1, 0);
+    for (int i = 0; i <= bagWeight; i++) { // 遍历物品
+        for (int j = bagWeight; j >= nums[i]; j--) { // 遍历背包容量
+            dp[j] = std::max(dp[j], dp[j - nums[i]] + nums[i]);
+        }
+    }
+    return dp[bagWeight] == bagWeight;
+}
+
+//    [1, 5, 11, 5]
+//    [1, 5, 11, 5]
+//    22, 11
+//    背包的体积为sum / 2
+//    背包要放入的商品（集合里的元素）重量为 元素的数值，价值也为元素的数值
+//    背包如果正好装满，说明找到了总和为 sum / 2 的子集。
+//    背包中每一个元素是不可重复放入。
 
 /// lc 72
 // edit distance
@@ -264,7 +296,6 @@ int minDis(const std::string& s1, const std::string& s2) {
             dp[i][j] = std::min(left, std::min(down, left_down));
         }
     }
-
     return dp[n][m];
 }
 
@@ -272,15 +303,20 @@ int minDis(const std::string& s1, const std::string& s2) {
 /// lc42
 // [0,1,0,2,1,0,1,3,2,1,2,1]
 int trapWater1(std::vector<int> height) {
-    int n = height.size();
-    std::vector<int> lmax(n+1, 0);
-    for (int i = 0; i < n; ++i) {
-        lmax[i+1] = std::max(height[i], lmax[i]);
+    int res = 0;
+    std::vector<int> lmax(height.size(), 0);
+    std::vector<int> rmax(height.size(), 0);
+    for (int i = 1; i < height.size(); ++i) {
+        lmax[i] = std::max(lmax[i - 1], height[i - 1]);
     }
-    int rmax = 0, res = 0;
-    for (int i = n-1; i >= 0; --i) {
-        rmax = std::max(rmax, height[i]);
-        res += std::min(lmax[i+1], rmax) - height[i];
+
+    for (int i = height.size() - 2; i >= 0; --i) {
+        rmax[i] = std::max(rmax[i + 1], height[i + 1]);
+    }
+
+    for (int i = 1; i < height.size(); ++i) {
+        auto tmp = std::min(lmax[i], rmax[i]) - height[i];
+        if (tmp > 0) res += tmp;
     }
     return res;
 }

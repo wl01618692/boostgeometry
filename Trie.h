@@ -29,13 +29,10 @@ public:
                 continue;
             }
             tmp->_sonMap[c] = new TrieNode();
-
-            if (c != s.back()) {
-                tmp = tmp->_sonMap[c];
-            }
-
             if (c == s.back()) {
                 tmp->_sonMap[c]->_isLeaf = true;
+            } else {
+                tmp = tmp->_sonMap[c];
             }
         }
     }

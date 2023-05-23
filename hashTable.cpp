@@ -6,6 +6,7 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
 
 /// lc 242
 //
@@ -18,6 +19,8 @@
 //  说明: 你可以假设字符串只包含小写字母。
 
 bool isAnagram(const std::string& s, const std::string& t) {
+    if (s.size() != t.size()) return false;
+    if (s.empty() && t.empty()) return true;
     std::unordered_map<char, int> m;
     for (auto c: s) {
         m[c]++;
@@ -107,3 +110,101 @@ bool isHappy(int num) {
     }
     return true;
 }
+
+//给定一个赎金信 (ransom) 字符串和一个杂志(magazine)字符串，判断第一个字符串 ransom 能不能由第二个字符串 magazines 里面的字符构成。如果可以构成，返回 true ；否则返回 false。
+//
+//(题目说明：为了不暴露赎金信字迹，要从杂志上搜索各个需要的字母，组成单词来表达意思。杂志字符串中的每个字符只能在赎金信字符串中使用一次。)
+//
+//注意：
+//
+//你可以假设两个字符串均只含有小写字母。
+//
+//canConstruct("a", "b") -> false
+//canConstruct("aa", "ab") -> false
+//canConstruct("aa", "aab") -> true
+
+bool lc383(std::string str1, std::string str2) {
+    std::unordered_map<char, int> m;
+    for (auto c: str2) {
+        m[c]++;
+    }
+
+    for (auto c: str1) {
+        m[c]--;
+        if (m[c] < 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// 时间复杂度: O(n)
+// 空间复杂度: O(1)
+bool lc383_optimized(std::string str1, std::string str2) {
+    int record[26] = {0};
+    for (auto c: str2) {
+        record[c - 'a']++;
+    }
+
+    for (auto c: str1) {
+        record[c - 'a']--;
+        if (record[c - 'a'] < 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/// lc15
+//
+//给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
+//
+//注意： 答案中不可以包含重复的三元组。
+//
+//示例：
+//
+//给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+// [-4, -1, -1, 0, 1, 2]，
+//满足要求的三元组集合为： [ [-1, 0, 1], [-1, -1, 2] ]
+
+std::vector<std::vector<int>> threeSum(std::vector<int>& nums) {
+    std::vector<std::vector<int>> result;
+    std::sort(nums.begin(), nums.end());
+    // 找出a + b + c = 0
+    // a = nums[i], b = nums[j], c = -(a + b)
+    for (int i = 0; i < nums.size(); i++) {
+        // 排序之后如果第一个元素已经大于零，那么不可能凑成三元组
+        if (nums[i] > 0) {
+            break;
+        }
+        if (i > 0 && nums[i] == nums[i - 1]) { //三元组元素a去重
+            continue;
+        }
+        std::unordered_set<int> set;
+        for (int j = i + 1; j < nums.size(); j++) {
+            if (j > i + 2
+                && nums[j] == nums[j-1]
+                && nums[j-1] == nums[j-2]) { // 三元组元素b去重
+                continue;
+            }
+            int c = 0 - (nums[i] + nums[j]);
+            if (set.find(c) != set.end()) {
+                result.push_back({nums[i], nums[j], c});
+                set.erase(c);// 三元组元素c去重
+            } else {
+                set.insert(nums[j]);
+            }
+        }
+    }
+    return result;
+}
+
+
+
+
+
+
+
+
+
+

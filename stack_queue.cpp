@@ -140,6 +140,7 @@ std::string output1047(const std::string& nums) {
 //
 
 bool output20(const std::string& nums) {
+    if (nums.empty()) return true;
     std::stack<char> s;
 
     for (auto &elem: nums) {
@@ -391,15 +392,235 @@ std::vector<int> maxSlidingWindow(std::vector<int>& nums, int k) {
 }
 
 /// lc 739
-// monotone_stack
-// monotone_stack
-// monotone_stack
-// monotone_stack
-// monotone_stack
 //  请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。
 //
 //  例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2, 1, 1, 0, 0]。
 //
 //  提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。
 //
+std::vector<int> lc739(std::vector<int> temp) {
+    std::stack<int> s;
+    std::vector<int> output(temp.size(), 0);
+    for (int i = 0; i < temp.size(); ++i) {
+        while (!s.empty() && s.top() < temp[i]) {
+            auto tmp = s.top();
+            output[tmp] = i - s.top();
+            s.pop();
+        }
+        s.push(i);
+    }
+    return output;
+}
+
+// 给你两个 没有重复元素 的数组 nums1 和 nums2 ，其中nums1 是 nums2 的子集。
+//
+//请你找出 nums1 中每个元素在 nums2 中的下一个比其大的值。
+//
+//nums1 中数字 x 的下一个更大元素是指 x 在 nums2 中对应位置的右边的第一个比 x 大的元素。如果不存在，对应位置输出 -1 。
+//
+//示例 1:
+//
+//输入: nums1 = [4,1,2], nums2 = [1,3,4,2].
+//输出: [-1,3,-1]
+//解释:
+//对于 num1 中的数字 4 ，你无法在第二个数组中找到下一个更大的数字，因此输出 -1 。
+//对于 num1 中的数字 1 ，第二个数组中数字1右边的下一个较大数字是 3 。
+//对于 num1 中的数字 2 ，第二个数组中没有下一个更大的数字，因此输出 -1 。
+//
+//示例 2:
+//输入: nums1 = [2,4], nums2 = [1,2,3,4].
+//输出: [3,-1]
+//解释:
+//对于 num1 中的数字 2 ，第二个数组中的下一个较大数字是 3 。
+//对于 num1 中的数字 4 ，第二个数组中没有下一个更大的数字，因此输出-1 。
+
+std::vector<int> lc496(std::vector<int> vec1, std::vector<int> vec2) {
+    std::stack<int> s;
+    std::map<int, int> m;
+    std::vector<int> output(vec1.size(), 0);
+    for (const auto& elem: vec2) {
+        while (!s.empty() && elem > s.top()) {
+            m[s.top()] = elem;
+            s.pop();
+        }
+        s.push(elem);
+    }
+
+    while (!s.empty()) {
+        m[s.top()] = -1;
+        s.pop();
+    }
+
+    for (int i = 0; i < vec1.size(); ++i) {
+        output[i] = m[vec1[i]];
+    }
+    return output;
+}
+
+
+
+// 844.比较含退格的字符串
+//
+//力扣题目链接
+//
+//(opens new window)
+//
+//给定 S 和 T 两个字符串，当它们分别被输入到空白的文本编辑器后，判断二者是否相等，并返回结果。 # 代表退格字符。
+//
+//注意：如果对空文本输入退格字符，文本继续为空。
+
+
+// "a##c"
+// "#a#c"
+bool lc844(std::string s, std::string t) {
+    std::stack<int> s1;
+    std::stack<int> s2;
+    for (auto& elem: s) {
+        if (elem == '#') {
+            if (s1.empty()) continue;
+            s1.pop();
+        } else {
+            s1.push(elem);
+        }
+    }
+
+    for (auto& elem:t) {
+        if (elem == '#') {
+            if (s2.empty()) continue;
+            s2.pop();
+        } else {
+            s2.push(elem);
+        }
+    }
+
+    if (s1.size() != s2.size()) return false;
+    while (!s1.empty() || !s2.empty()) {
+        if (s1.top() != s2.top()) {
+            return false;
+        }
+        s1.pop();
+        s2.pop();
+    }
+    return true;
+}
+
+//
+//示例 1：
+//
+//    输入：s = "ab#c", t = "ad#c"
+//    输出：true
+//    解释：s 和 t 都会变成 “ac”。
+//
+//示例 2：
+//
+//    输入：s = "ab##", t = "c#d#"
+//    输出：true
+//    解释：s 和 t 都会变成 “”。
+//
+//示例 3：
+//
+//    输入：s = "a##c", t = "#a#c"
+//    输出：true
+//    解释：s 和 t 都会变成 “c”。
+//
+//示例 4：
+//
+//    输入：s = "a#c", t = "b"
+//    输出：false
+//    解释：s 会变成 “c”，但 t 仍然是 “b”。
+bool backspaceCompare(string s, string t) {
+    int i = s.size() - 1;
+    int j = t.size() - 1;
+    while (true) {
+        {
+            int count = 0;
+            while (i >= 0) {
+                if (s[i] == '#') {
+                    ++count;
+                    --i;
+                } else {
+                    if (count > 0) {
+                        --i;
+                        --count;
+                    } else break;
+                }
+            }
+        }
+
+        {
+            int count = 0;
+            while (j >= 0) {
+                if (t[j] == '#') {
+                    ++count;
+                    --j;
+                } else {
+                    if (count > 0) {
+                        --j;
+                        --count;
+                    } else break;
+                }
+            }
+        }
+
+        if (i < 0 || j < 0) break;
+        if (s[i] != t[j]) return false;
+        --i;
+        --j;
+    }
+
+    if (i == -1 && j == -1) return true;
+    return false;
+}
+
+/// 2390
+// You are given a string s, which contains stars *.
+//
+// In one operation, you can:
+//
+//    Choose a star in s.
+//    Remove the closest non-star character to its left, as well as remove the star itself.
+//
+// Return the string after all stars have been removed.
+
+//Example 1:
+//
+//Input: s = "leet**cod*e"
+//Output: "lecoe"
+//Explanation: Performing the removals from left to right:
+//- The closest character to the 1st star is 't' in "leet**cod*e". s becomes "lee*cod*e".
+//- The closest character to the 2nd star is 'e' in "lee*cod*e". s becomes "lecod*e".
+//- The closest character to the 3rd star is 'd' in "lecod*e". s becomes "lecoe".
+//There are no more stars, so we return "lecoe".
+//
+//Example 2:
+//
+//Input: s = "erase*****"
+//Output: ""
+//Explanation: The entire string is removed, so we return an empty string.
+
+std::string lc2390(std::string s) {
+    if (s.size() == 1) return s;
+    std::string output;
+    int n = s.size() - 1;
+    int count = 0;
+    while (n >= 0) {
+        if (s[n] != '*' && count == 0) {
+            output.push_back(s[n]);
+            --n;
+        }
+
+        if (s[n] == '*') {
+            ++count;
+            --n;
+        } else {
+            if (count > 0) {
+                --count;
+                --n;
+            }
+        }
+    }
+    std::reverse(output.begin(), output.end());
+    return output;
+}
+
 

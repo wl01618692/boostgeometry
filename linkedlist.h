@@ -199,8 +199,27 @@ public:
     //  Input: head = [1,4,3,2,5,2], x = 3
     //  Output: [1,2,2,4,3,5]
     LinkedNode* partition(LinkedNode* head, int x) {
+        LinkedNode* slow = new LinkedNode();
+        LinkedNode* fast = new LinkedNode();
+        LinkedNode* slowDummy = slow;
+        LinkedNode* fastDummy = fast;
+        auto tmp = head;
+        while (tmp != nullptr) {
+            if (tmp->val < x) {
+                slow->next = tmp;
+                slow = slow->next;
+            } else {
+                fast->next = tmp;
+                fast = fast->next;
+            }
+            tmp = tmp->next;
+        }
+        slow->next = fastDummy->next;
+        fast->next = nullptr;
+        return slowDummy->next;
     }
 
+    /// 234
     // 234.回文链表
     //请判断一个链表是否为回文链表。
     //
@@ -246,6 +265,7 @@ public:
         return true;
     }
 
+    /// 143
     // L0->L1->...->Ln
     // L0->Ln->L1->Ln-1...
     // 1->2->3->4
@@ -307,42 +327,49 @@ public:
     LinkedNode* ReverseTmp(LinkedNode* head, int k) {
         LinkedNode* prev = nullptr;
         LinkedNode* tmp = head;
+        LinkedNode* next;
         int count = 0;
         while (tmp != nullptr) {
-            auto next = tmp->next;
+            next = tmp->next;
             tmp->next = prev;
             prev = tmp;
             tmp = next;
             ++count;
-            if (count >= k) {
-                return next;
+            if (count == k) {
+                break;
             }
         }
-        return nullptr;
+        return next;
     }
 
     void reverseNodesinK(LinkedNode* head, int k) {
         auto length = 0;
         auto tmp = head;
+        LinkedNode* dummyHead;
         while (tmp != nullptr) {
+            if (length == (k - 1)) dummyHead = tmp;
             tmp = tmp->next;
             length++;
         }
 
         tmp = head;
-        while (length > k) {
+        while (length >= k) {
             auto next = ReverseTmp(tmp, k);
-            {
-                int count = 1;
-                auto node = tmp;
-                while (count < k) {
-                    ++count;
-                    node = node->next;
-                }
-                tmp->next = node;
-            }
             length -= k;
+            if (length >= k) {
+                int j = 1;
+                auto tmp2 = next;
+                while (j != k) {
+                    tmp2 = tmp2->next;
+                    ++j;
+                }
+                tmp->next = tmp2;
+                tmp = next;
+            } else {
+                tmp->next = next;
+            }
         }
+        int jj = 0;
     }
 
     // swapNodes in pair

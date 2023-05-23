@@ -40,6 +40,16 @@ void linkedlist_test () {
     l3.addAtTail(5);
     l3.rotateRight(l3._head, 6);
     int kl = 0;
+
+    LinkedList l4;
+    l4.addAtHead(1);
+    l4.addAtTail(2);
+    l4.addAtTail(3);
+    l4.addAtTail(4);
+    l4.addAtTail(5);
+    l4.addAtTail(6);
+    l4.reverseNodesinK(l4._head, 2);
+
 }
 
 
