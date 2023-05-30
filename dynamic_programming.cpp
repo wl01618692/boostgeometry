@@ -369,8 +369,163 @@ int minPathSumOptimized(std::vector<std::vector<int>>& grid) {
             }
         }
     }
-
     return dp[n - 1];
+}
+
+// 740. Delete and Earn
+//You are given an integer array nums. You want to maximize the number of points you get by performing the following operation any number of times:
+//
+//Pick any nums[i] and delete it to earn nums[i] points. Afterwards, you must delete every element equal to nums[i] - 1 and every element equal to nums[i] + 1.
+//
+//Return the maximum number of points you can earn by applying the above operation some number of times.
+//
+//Example 1:
+//
+//Input: nums = [3,4,2]
+//Output: 6
+//Explanation: You can perform the following operations:
+//- Delete 4 to earn 4 points. Consequently, 3 is also deleted. nums = [2].
+//- Delete 2 to earn 2 points. nums = [].
+//You earn a total of 6 points.
+//
+//Example 2:
+//
+//Input: nums = [2,2,3,3,3,4]
+//Output: 9
+//Explanation: You can perform the following operations:
+//- Delete a 3 to earn 3 points. All 2's and 4's are also deleted. nums = [3,3].
+//- Delete a 3 again to earn 3 points. nums = [3].
+//- Delete a 3 once more to earn 3 points. nums = [].
+//You earn a total of 9 points.
+
+// 0 4 4 9 9 9 9
+// 状态定义：f[i] 为数组中数字 1 ~ i 通过操作能获取的最大分值。
+//
+//状态转移：
+//
+//    对于数字 i，如果选（即删除并获取分值），得分为 f[i - 2] + i * c[i]
+//    对于数字 i，如果不选（即放弃操作），的氛围 f[i - 1]
+int deleteAndEarn(std::vector<int>& nums) {
+    if (nums.size() == 1) return nums[0];
+    int maxVal = 0;
+    std::map<int, int> mp;
+    for (auto & elem: nums) {
+        if (elem > maxVal) {
+            maxVal = elem;
+        }
+        mp[elem]++;
+    }
+    std::vector<int> dp(maxVal + 1, 0);
+    if (mp.find(1) != mp.end()) dp[1] = mp[1];
+    for (int i = 2; i <= maxVal; ++i) {
+        dp[i] = std::max(mp[i] * i + dp[i - 2], dp[i - 1]);
+    }
+    return dp[maxVal];
+}
+
+int deleteAndEarnOptimized(std::vector<int>& nums) {
+    if (nums.size() == 1) return nums[0];
+    int maxVal = 0;
+    std::map<int, int> mp;
+    for (auto & elem: nums) {
+        if (elem > maxVal) {
+            maxVal = elem;
+        }
+        mp[elem]++;
+    }
+    int dp0 = 0;
+    int dp1 = 0;
+    int dp2 = 0;
+    if (mp.size() == 1) return mp.begin()->first * mp.begin()->second;
+    if (mp.find(1) != mp.end()) dp1 = mp[1];
+    for (int i = 2; i <= maxVal; ++i) {
+        dp2 = std::max(mp[i] * i + dp0, dp1);
+        dp0 = dp1;
+        dp1 = dp2;
+    }
+    return dp2;
+}
+
+// 120. Triangle
+//Given a triangle array, return the minimum path sum from top to bottom.
+//
+//For each step, you may move to an adjacent number of the row below. More formally, if you are on index i on the current row, you may move to either index i or index i + 1 on the next row.
+//
+//
+//
+//Example 1:
+//
+//Input: triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+//Output: 11
+//Explanation: The triangle looks like:
+// 2
+// 3 4
+// 6 5 7
+// 4 1 8 3
+//The minimum path sum from top to bottom is 2 + 3 + 5 + 1 = 11 (underlined above).
+//
+//Example 2:
+//
+//Input: triangle = [[-10]]
+//Output: -10
+// [[7],[-5,9],[6,5,2],[-8,-2,-7,3],[-2,6,-6,-1,4]]
+// 7
+// -5 9
+// 6 5 2
+// -8,-2,-7,3
+// -2,6,-6,-1,4
+int minimumTotal(std::vector<std::vector<int>>& triangle) {
+    if (triangle.size() == 1) return triangle[0][0];
+    int n = triangle.size();
+    int m = triangle.back().size();
+    std::vector<std::vector<int>> dp(n, std::vector<int>(m, 0));
+    dp[0][0] = triangle[0][0];
+    for (int i = 1; i < n; ++i) {
+        for (int j = 0; j <= i; ++j) {
+            if (j == 0) {
+                dp[i][j] = dp[i - 1][j] + triangle[i][j];
+                continue;
+            }
+            if (dp[i - 1][j] == 0) {
+                dp[i][j] = dp[i - 1][j - 1] + triangle[i][j];
+                continue;
+            }
+            dp[i][j] = std::min(dp[i - 1][j], dp[i - 1][j - 1]) + triangle[i][j];
+        }
+    }
+
+    int minVal = INT32_MAX;
+    for (auto & elem: dp[n - 1]) {
+        minVal = std::min(minVal, elem);
+    }
+    return minVal;
+}
+
+int minimumTotalOptimized(std::vector<std::vector<int>>& triangle) {
+    if (triangle.size() == 1) return triangle[0][0];
+    int n = triangle.size();
+    int m = triangle.back().size();
+    std::vector<std::vector<int>> dp(n, std::vector<int>(m, 0));
+    dp[0][0] = triangle[0][0];
+    for (int i = 1; i < n; ++i) {
+        for (int j = 0; j <= i; ++j) {
+            if (j == 0) {
+                dp[i][j] = dp[i - 1][j] + triangle[i][j];
+                continue;
+            }
+            if (dp[i - 1][j] == 0) {
+                dp[i][j] = dp[i - 1][j - 1] + triangle[i][j];
+                continue;
+            }
+            dp[i][j] = std::min(dp[i - 1][j], dp[i - 1][j - 1]) + triangle[i][j];
+        }
+    }
+
+    int minVal = INT32_MAX;
+    for (auto & elem: dp[n - 1]) {
+        minVal = std::min(minVal, elem);
+    }
+    return minVal;
 }
 
 void test_dp() {
@@ -403,4 +558,15 @@ void test_dp() {
     minPathSumOptimized(grid);
 
     trapWater1(v);
+
+    std::vector<int> nums123 = {2,2,3,3,3,4};
+    deleteAndEarnOptimized(nums123);
+
+    std::vector<int> v4 = {7};
+    std::vector<int> v5 = {-5,9};
+    std::vector<int> v6 = {6,5,2};
+    std::vector<int> v7 = {-8,-2,-7,3};
+    std::vector<int> v8 = {-2,6,-6,-1,4};
+    std::vector<std::vector<int>> kk= {v4, v5, v6, v7, v8};
+    minimumTotal(kk);
 }

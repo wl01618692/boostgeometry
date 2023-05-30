@@ -18,7 +18,7 @@
 #include "stack_queue.h"
 #include "hashTable.h"
 #include "unionfind.h"
-
+#include "lc150mustdo.h"
 using namespace std;
 class A {
 public:
@@ -189,6 +189,7 @@ int main() {
     lc2390("erase*****");
     std::vector<int> sss = {73, 74, 75, 71, 69, 72, 76, 73};
     lc739(sss);
+    testing123();
     int a = 10;
     int &b = a;  // 定义一个左值引用变量
     b = 20;      // 通过左值引用修改引用内存的值
