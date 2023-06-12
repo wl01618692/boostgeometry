@@ -343,10 +343,9 @@ int monotoneIncreasingDigits(int N) {
 //
 //#
 
-// 第一步：将数组按照绝对值大小从小到大排序
-    static bool cmp(int a, int b) {
-        return abs(a) > abs(b);
-    }
+static bool cmp(int a, int b) {
+    return abs(a) > abs(b);
+}
 
 int lc105(std::vector<int> nums, int k) {
     std::sort(nums.begin(), nums.end(), cmp);

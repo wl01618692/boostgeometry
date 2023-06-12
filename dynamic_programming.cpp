@@ -486,7 +486,7 @@ int minimumTotal(std::vector<std::vector<int>>& triangle) {
                 dp[i][j] = dp[i - 1][j] + triangle[i][j];
                 continue;
             }
-            if (dp[i - 1][j] == 0) {
+            if (dp[i - 1][j] == 0 && i == j) {
                 dp[i][j] = dp[i - 1][j - 1] + triangle[i][j];
                 continue;
             }

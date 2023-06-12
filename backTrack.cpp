@@ -3,6 +3,7 @@
 //
 
 #include "backTrack.h"
+using namespace std;
 
 // void backtracking(参数) {
 //    if (终止条件) {
@@ -17,6 +18,7 @@
 //    }
 //}
 
+// lc 77
 class permutationSolution {
 
     std::vector<std::vector<int>> result; // 存放符合条件结果的集合
@@ -93,20 +95,21 @@ class Solution216 {
     std::vector<std::vector<int>> result; // 存放符合条件结果的集合
     std::vector<int> path; // 用来存放符合条件结果
 
-    void backTrack216(int n, int k, int sum, int startIndex) {
-        if (path.size() == k) {
-            if (sum == n) result.push_back(path);
+    void backTrack216(int size, int target, int sum, int startIndex) {
+        if (path.size() == size) {
+            if (sum == target) result.push_back(path);
             return;
         }
 
-        for (int i = startIndex; i <= 9 - (k - path.size()) + 1; ++i) {
-            if (sum > n) {
+        for (int i = startIndex; i <= 9 - (size - path.size()) + 1; ++i) {
+            if (sum > target) {
                 return;
             }
             sum += i;
             path.push_back(i);
-            backTrack216(n, k, sum, startIndex + 1);
+            backTrack216(size, target, sum, i + 1);
             path.pop_back();
+            sum -= i;
         }
     }
 
@@ -115,6 +118,170 @@ class Solution216 {
         return result;
     }
 };
+
+
+//vector<vector<int>> combinationSum3(int k, int n) {
+//    result.clear(); // 可以不加
+//    path.clear();   // 可以不加
+//    backtracking(n, k, 0, 1);
+//    return result;
+//}
+
+// 39. 组合总和
+//
+//给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+//
+//candidates 中的数字可以无限制重复被选取。
+//
+//说明：
+//
+//    所有数字（包括 target）都是正整数。
+//    解集不能包含重复的组合。
+//
+//示例 1：
+//
+//    输入：candidates = [2,3,6,7], target = 7,
+//    所求解集为： [ [7], [2,2,3] ]
+//
+//示例 2：
+//
+//    输入：candidates = [2,3,5], target = 8,
+//    所求解集为： [ [2,2,2,2], [2,3,3], [3,5] ]
+//
+vector<vector<int>> output;
+vector<int> path;
+void backTracking39(std::vector<int> nums, int startIndex, int sum, int target) {
+    if (sum > target) {
+        return;
+    }
+
+    if (sum == target) {
+        output.push_back(path);
+        return;
+    }
+
+    for (int i = startIndex; i < nums.size() && sum + nums[i] <= target; ++i) {
+        sum += nums[i];
+        path.push_back(nums[i]);
+        backTracking39(nums, i, sum, target);
+        path.pop_back();
+        sum -= nums[i];
+    }
+}
+
+vector<vector<int>> entry39(std::vector<int> nums, int target) {
+    output.clear();
+    path.clear();
+    backTracking39(nums, 0, 0, target);
+    return output;
+}
+
+// 40.组合总和II
+//
+//给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+//
+//candidates 中的每个数字在每个组合中只能使用一次。
+//
+//说明： 所有数字（包括目标数）都是正整数。解集不能包含重复的组合。
+//
+//    示例 1:
+//    输入: candidates = [10,1,2,7,6,1,5], target = 8,
+//    所求解集为:
+// [
+//  [1, 7],
+//  [1, 2, 5],
+//  [2, 6],
+//  [1, 1, 6]
+//]
+
+vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+
+}
+
+// 131
+// 给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+//
+//返回 s 所有可能的分割方案。
+//
+//示例: 输入: "aab" 输出: [ ["aa","b"], ["a","a","b"] ]
+class Solution {
+private:
+    vector<vector<string>> result;
+    vector<string> path; // 放已经回文的子串
+    void backtracking (const string& s, int startIndex) {
+        // 如果起始位置已经大于s的大小，说明已经找到了一组分割方案了
+        if (startIndex >= s.size()) {
+            result.push_back(path);
+            return;
+        }
+        for (int i = startIndex; i < s.size(); i++) {
+            if (isPalindrome(s, startIndex, i)) {   // 是回文子串
+                // 获取[startIndex,i]在s中的子串
+                string str = s.substr(startIndex, i - startIndex + 1);
+                path.push_back(str);
+            } else {                                // 不是回文，跳过
+                continue;
+            }
+            backtracking(s, i + 1); // 寻找i+1为起始位置的子串
+            path.pop_back(); // 回溯过程，弹出本次已经填在的子串
+        }
+    }
+    bool isPalindrome(const string& s, int start, int end) {
+        for (int i = start, j = end; i < j; i++, j--) {
+            if (s[i] != s[j]) {
+                return false;
+            }
+        }
+        return true;
+    }
+public:
+    vector<vector<string>> partition(string s) {
+        result.clear();
+        path.clear();
+        backtracking(s, 0);
+        return result;
+    }
+};
+
+
+
+
+// 给定一个只包含数字的字符串，复原它并返回所有可能的 IP 地址格式。
+//
+//有效的 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+//
+//例如："0.1.2.201" 和 "192.168.1.1" 是 有效的 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效的 IP 地址。
+//
+//示例 1：
+//
+//    输入：s = "25525511135"
+//    输出：["255.255.11.135","255.255.111.35"]
+//
+//示例 2：
+//
+//    输入：s = "0000"
+//    输出：["0.0.0.0"]
+//
+//示例 3：
+//
+//    输入：s = "1111"
+//    输出：["1.1.1.1"]
+//
+//示例 4：
+//
+//    输入：s = "010010"
+//    输出：["0.10.0.10","0.100.1.0"]
+//
+//示例 5：
+//
+//    输入：s = "101023"
+//    输出：["1.0.10.23","1.0.102.3","10.1.0.23","10.10.2.3","101.0.2.3"]
+//
+//提示：
+//
+//    0 <= s.length <= 3000
+//    s 仅由数字组成
+
 
 // void backtracking(参数) {
 //    if (终止条件) {

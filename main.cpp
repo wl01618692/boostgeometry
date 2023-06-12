@@ -139,6 +139,8 @@ int rvalue_test() {
 }
 
 int main() {
+    double ads = 3 / 2;
+    std::cout << ads;
     std::vector<double> dd = {1, 2, 3};
     std::pair<int, int> p1 = {1, 2};
     auto ks = std::get<0> (p1);

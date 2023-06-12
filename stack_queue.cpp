@@ -339,9 +339,8 @@ vector<int> topKFrequent(vector<int>& nums, int k) {
 //
 //返回滑动窗口中的最大值。
 //
-//进阶：
-//
-//你能在线性时间复杂度内解决此题吗？
+
+
 // nums = [1,3,-1,-3, 5, 3, 6, 7] k = 3
 // output = [3, 3, 5, 5, 6, 7]
 class monotone_queue {

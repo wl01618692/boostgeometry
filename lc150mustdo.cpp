@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include "Util.h"
 #include <set>
+#include <unordered_set>
 
 /// Array String
 // 55. Jump Game
@@ -167,6 +168,7 @@ std::string reverseWords(std::string s) {
 //Output: 9
 // 1 2 3 4 5 8 10 11 12 13 14 15
 int longestConsecutive(std::vector<int>& nums) {
+    if (nums.size() == 1) return 1;
     std::set<int> s;
     for (auto& elem: nums) {
         s.insert(elem);
@@ -195,7 +197,7 @@ int longestConsecutive(std::vector<int>& nums) {
 //    the beginning of a sequence (i.e. currentNum-1 is not present in
 //    nums), the while loop can only run for n iterations throughout the
 //    entire runtime of the algorithm. This means that despite looking like
-//    O(n⋅n) complexity, the nested loops actually run in O(n+n)=O(n)O(n + n) = O(n)
+//    O(n⋅n) complexity, the nested loops actually run in O(n+n)=O(n)
 //    time. All other computations occur in constant time, so the overall
 //    runtime is linear.
 //
@@ -235,7 +237,7 @@ int longestConsecutive(std::vector<int>& nums) {
 bool isIsomorphic(std::string s, std::string t) {
     if (s.size() != t.size()) return false;
     std::map<char, char> m;
-    std::set<char> sets;
+    std::unordered_set<char> sets;
     for (int i = 0; i < s.size(); ++i) {
         if (m.find(s[i]) == m.end() && sets.find(t[i]) != sets.end()) {
             return false;
@@ -271,11 +273,14 @@ bool isIsomorphic(std::string s, std::string t) {
 //Output: false
 
 bool wordPattern(std::string pattern, std::string s) {
-    std::map<char, std::string> m;
-    std::vector<std::string> vec;
+    int countSpace = 1;
     for (auto& elem: s) {
-
+        if (elem == ' ') ++countSpace;
     }
+    if (countSpace != s.size()) return false;
+    std::map<char, std::string> m;
+    std::unordered_set<std::string> sets;
+
     return true;
 }
 
@@ -301,15 +306,24 @@ bool wordPattern(std::string pattern, std::string s) {
 // Example 3:
 //
 // Input: s = "(1+(4+5+2)-3)+(6+8)"
-// O
-// utput: 23
+// Output: 23
+
 // (3 + ( 3 - 2))
+//  ))2 - 3 ( + 3 (
 // 4
 int calculate(std::string s) {
     int output = 0;
     std::stack<char> stack1;
     std::reverse(s.begin(), s.end());
+    for (auto& elem: s) {
+        if (elem == ')') {
+            if (stack1.top() == '(') {
+                stack1.pop();
+                continue;
+            }
 
+        }
+    }
 }
 
 // 150. Evaluate Reverse Polish Notation
@@ -634,6 +648,8 @@ ListNode* deleteDuplicates(ListNode* head) {
 // Output: [[3,null],[3,0],[3,null]]
 
 
+
+
 class Node {
 public:
     int val;
@@ -733,42 +749,28 @@ struct TreeNode {
 };
 
 std::vector<std::vector<int>> zigzagLevelOrder(TreeNode* root) {
-
+    std::queue<TreeNode*> q;
+    std::vector<std::vector<int>> output;
+    if (root == nullptr) return output;
+    q.push(root);
+    int c = 0;
+    while (!q.empty()) {
+        std::vector<int> a;
+        int size = q.size();
+        while (size) {
+            auto t = q.front();
+            q.pop();
+            a.push_back(t->val);
+            if (t->left != nullptr) q.push(t->left);
+            if (t->right != nullptr) q.push(t->right);
+            --size;
+            ++c;
+        }
+        if (c % 2 == 0) std::reverse(a.begin(), a.end());
+        output.push_back(a);
+    }
+    return output;
 }
-
-//         queue<TreeNode*> q;
-//         int c=0;
-//         vector<vector<int>>v;
-//         if(!root)
-//         return {};
-//
-//         q.push(root);
-//
-//
-//         while(!q.empty()){
-//             vector<int>a;
-//             int size=q.size();
-//             c++;
-//
-//             while(size--){
-//                 TreeNode* curr=q.front();
-//                 q.pop();
-//
-//
-//
-//                 a.push_back(curr->val);
-//                 if(curr->left)
-//                 q.push(curr->left);
-//
-//                 if(curr->right)
-//                 q.push(curr->right);
-//             }
-//             if(c%2==0)
-//             reverse(a.begin(),a.end());
-//             v.push_back(a);
-//
-//         }
-//         return v;
 
 /// Binary search tree
 /// Graph General
