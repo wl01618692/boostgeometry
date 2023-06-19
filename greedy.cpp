@@ -55,7 +55,6 @@ int integerReplacement(int n) {
     return ans;
 }
 
-// 假设你是一位很棒的家长，想要给你的孩子们一些小饼干。但是，每个孩子最多只能给一块饼干。
 // 对每个孩子 i，都有一个胃口值 g[i]，这是能让孩子们满足胃口的饼干的最小尺寸；并且每块饼干 j，都有一个尺寸 s[j] 。如果 s[j] >= g[i]，我们可以将这个饼干 j 分配给孩子 i ，这个孩子会得到满足。你的目标是尽可能满足越多数量的孩子，并输出这个最大数值。
 //示例 1:
 //    输入: g = [1,2,3], s = [1,1]
@@ -154,18 +153,18 @@ int maxSubArray_bf(std::vector<int> &nums) {
     return result;
 }
 
-int maxSubArray(std::vector<int>& nums) {
-    int result = INT32_MIN;
-    int count = 0;
-    for (int i = 0; i < nums.size(); ++i) {
-        count += nums[i];
-        if (count > result) {
-            result = count;
-        }
-        if (count < 0) count = 0;
-    }
-    return result;
-}
+//int maxSubArray(std::vector<int>& nums) {
+//    int result = INT32_MIN;
+//    int count = 0;
+//    for (int i = 0; i < nums.size(); ++i) {
+//        count += nums[i];
+//        if (count > result) {
+//            result = count;
+//        }
+//        if (count < 0) count = 0;
+//    }
+//    return result;
+//}
 
 /// lc 122
 // 示例 1:
@@ -424,6 +423,13 @@ int canCompleteCircuit1(std::vector<int>& gas, std::vector<int>& cost) {
             min = curSum;
         }
     }
+    // 直接从全局进行贪心选择，情况如下：
+    //
+    //    情况一：如果gas的总和小于cost总和，那么无论从哪里出发，一定是跑不了一圈的
+    //
+    //    情况二：rest[i] = gas[i]-cost[i]为一天剩下的油，i从0开始计算累加到最后一站，如果累加没有出现负数，说明从0出发，油就没有断过，那么0就是起点。
+    //
+    //    情况三：如果累加的最小值是负数，汽车就要从非0节点出发，从后向前，看哪个节点能把这个负数填平，能把这个负数填平的节点就是出发节点。
     if (curSum < 0) return -1;  // 情况1
     if (min >= 0) return 0;     // 情况2
     // 情况3

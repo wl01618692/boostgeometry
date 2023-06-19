@@ -18,7 +18,7 @@ using namespace std;
 //    }
 //}
 
-// lc 77
+/// lc 77
 class permutationSolution {
 
     std::vector<std::vector<int>> result; // 存放符合条件结果的集合
@@ -55,8 +55,8 @@ class permutationSolution {
 
         // path
         // k - path
-        // k - path <= n - i
-        // i <= n - k + path.size()
+        // k - path <= n - i + 1
+        // i <= n - k + path.size() + 1
         // 4 3 0, n - k + path = 1, i = 1
         for (int i = startIndex; i <= n - k + path.size() + 1; ++i) {
             path.push_back(i);
@@ -283,15 +283,4 @@ public:
 //    s 仅由数字组成
 
 
-// void backtracking(参数) {
-//    if (终止条件) {
-//        存放结果;
-//        return;
-//    }
-//
-//    for (选择：本层集合中元素（树中节点孩子的数量就是集合的大小）) {
-//        处理节点;
-//        backtracking(路径，选择列表); // 递归
-//        回溯，撤销处理结果
-//    }
-//}
+

@@ -401,7 +401,7 @@ std::vector<int> lc739(std::vector<int> temp) {
     std::stack<int> s;
     std::vector<int> output(temp.size(), 0);
     for (int i = 0; i < temp.size(); ++i) {
-        while (!s.empty() && s.top() < temp[i]) {
+        while (!s.empty() && temp[s.top()] < temp[i]) {
             auto tmp = s.top();
             output[tmp] = i - s.top();
             s.pop();
@@ -460,9 +460,6 @@ std::vector<int> lc496(std::vector<int> vec1, std::vector<int> vec2) {
 
 // 844.比较含退格的字符串
 //
-//力扣题目链接
-//
-//(opens new window)
 //
 //给定 S 和 T 两个字符串，当它们分别被输入到空白的文本编辑器后，判断二者是否相等，并返回结果。 # 代表退格字符。
 //
@@ -606,6 +603,7 @@ std::string lc2390(std::string s) {
         if (s[n] != '*' && count == 0) {
             output.push_back(s[n]);
             --n;
+            continue;
         }
 
         if (s[n] == '*') {

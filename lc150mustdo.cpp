@@ -8,7 +8,9 @@
 #include "Util.h"
 #include <set>
 #include <unordered_set>
+#include <numeric>
 
+using namespace std;
 /// Array String
 // 55. Jump Game
 //You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
@@ -272,15 +274,43 @@ bool isIsomorphic(std::string s, std::string t) {
 //Input: pattern = "aaaa", s = "dog cat cat dog"
 //Output: false
 
+std::string findString(std::string s, int spaceCount) {
+    int i = 0;
+    while (spaceCount != 0) {
+        if (s[i] == ' ') {
+            --spaceCount;
+        }
+        ++i;
+    }
+
+    auto j = i;
+    while (s[j] != ' ') {
+        ++j;
+    }
+    return s.substr(i, j);
+}
+
 bool wordPattern(std::string pattern, std::string s) {
     int countSpace = 1;
     for (auto& elem: s) {
         if (elem == ' ') ++countSpace;
     }
-    if (countSpace != s.size()) return false;
+    if (countSpace != pattern.size()) return false;
     std::map<char, std::string> m;
     std::unordered_set<std::string> sets;
 
+    for (int i = 0; i < pattern.size(); ++i) {
+        auto tmp = findString(s, i);
+        if (m.find(pattern[i]) == m.end() && sets.find(tmp) != sets.end()) {
+            return false;
+        }
+
+        if (m.find(pattern[i]) != m.end() && m[pattern[i]] != tmp) {
+            return false;
+        }
+        m[pattern[i]] = tmp;
+        sets.insert(tmp);
+    }
     return true;
 }
 
@@ -772,6 +802,27 @@ std::vector<std::vector<int>> zigzagLevelOrder(TreeNode* root) {
     return output;
 }
 
+std::vector<std::vector<int>> LevelOrder(TreeNode* root) {
+    std::queue<TreeNode*> q;
+    std::vector<std::vector<int>> output;
+    if (root == nullptr) return output;
+    q.push(root);
+    while (!q.empty()) {
+        std::vector<int> a;
+        int size = q.size();
+        while (size) {
+            auto t = q.front();
+            q.pop();
+            a.push_back(t->val);
+            if (t->left != nullptr) q.push(t->left);
+            if (t->right != nullptr) q.push(t->right);
+            --size;
+        }
+        output.push_back(a);
+    }
+    return output;
+}
+
 /// Binary search tree
 /// Graph General
 /// Graph BFS
@@ -885,22 +936,214 @@ public:
 
 class WordDictionary {
 public:
+    class TrieNode {
+    public:
+        bool _isLeaf{};
+        std::map<char, TrieNode*> _sonMap;
+    };
+
+    TrieNode* root;
+
     WordDictionary() {
-        _t = new Trie();
+
     }
 
     void addWord(std::string word) {
-        _t->insert(word);
+        auto tmp = root;
+        for (auto& elem: word) {
+            if (tmp->_sonMap.find(elem) != tmp->_sonMap.end()) {
+                tmp = tmp->_sonMap[elem];
+                continue;
+            }
+            tmp->_sonMap[elem] = new TrieNode();
+            tmp = tmp->_sonMap[elem];
+        }
+        tmp->_isLeaf = true;
     }
 
     bool search(std::string word) {
+        auto tmp = root;
+        for (auto& elem: word) {
+            if (elem == '.' || tmp->_sonMap.find(elem) != tmp->_sonMap.end()) {
+                tmp = tmp->_sonMap[elem];
+            } else {
+                return false;
+            }
+        }
+        return tmp->_isLeaf;
     }
 
-    Trie* _t;
+
 };
 /// Backtracking
+// 22. Generate Parentheses
+//Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+//
+//
+//
+//Example 1:
+//
+//Input: n = 3
+//Output: ["((()))","(()())","(())()","()(())","()()()"]
+//
+//Example 2:
+//
+//Input: n = 1
+//Output: ["()"]
+
+class Solution {
+    void backtrack(vector<string>& ans, string& cur, int open, int close, int n) {
+        if (cur.size() == n * 2) {
+            ans.push_back(cur);
+            return;
+        }
+        if (open < n) {
+            cur.push_back('(');
+            backtrack(ans, cur, open + 1, close, n);
+            cur.pop_back();
+        }
+        if (close < open) {
+            cur.push_back(')');
+            backtrack(ans, cur, open, close + 1, n);
+            cur.pop_back();
+        }
+    }
+public:
+    vector<string> generateParenthesis(int n) {
+        vector<string> result;
+        string current;
+        backtrack(result, current, 0, 0, n);
+        return result;
+    }
+};
+
 /// Divide & Conquer
 /// Kadane's Algorithm
+
+// 53. Maximum Subarray
+//Given an integer array nums, find the
+//subarray
+//with the largest sum, and return its sum.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [-2,1,-3,4,-1,2,1,-5,4]
+//Output: 6
+//Explanation: The subarray [4,-1,2,1] has the largest sum 6.
+//
+//Example 2:
+//
+//Input: nums = [1]
+//Output: 1
+//Explanation: The subarray [1] has the largest sum 1.
+//
+//Example 3:
+//
+//Input: nums = [5,4,-1,7,8]
+//Output: 23
+//Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
+
+int maxSubArray(std::vector<int>& nums) {
+    if (nums.empty()) return 0;
+    std::vector<int> dp(nums.size(), 0);
+    dp[0] = nums[0];
+    for (int i = 1; i < nums.size(); ++i) {
+        dp[i] = std::max(dp[i - 1], 0) + nums[i];
+    }
+    return *std::max(dp.begin(), dp.end());
+}
+
+int maxSubArrayOptimized(std::vector<int>& nums) {
+    if (nums.empty()) return 0;
+    int dp0, dp1;
+    int dp2 = INT32_MIN;
+    dp0 = nums[0];
+    for (int i = 1; i < nums.size(); ++i) {
+        dp1 = std::max(dp0, 0) + nums[i];
+        dp0 = dp1;
+        dp2 = std::max(dp1, dp2);
+    }
+    return dp2;
+}
+
+// 918. Maximum Sum Circular Subarray
+//Given a circular integer array nums of length n, return the maximum possible sum of a non-empty subarray of nums.
+//
+//A circular array means the end of the array connects to the beginning of the array. Formally, the next element of nums[i] is nums[(i + 1) % n] and the previous element of nums[i] is nums[(i - 1 + n) % n].
+//
+//A subarray may only include each element of the fixed buffer nums at most once. Formally, for a subarray nums[i], nums[i + 1], ..., nums[j], there does not exist i <= k1, k2 <= j with k1 % n == k2 % n.
+//
+//Example 1:
+//
+//Input: nums = [1,-2,3,-2]
+//Output: 3
+//Explanation: Subarray [3] has maximum sum 3.
+//
+//Example 2:
+//
+//Input: nums = [5,-3,5]
+//Output: 10
+//Explanation: Subarray [5,5] has maximum sum 5 + 5 = 10.
+//
+//Example 3:
+//
+//Input: nums = [-3,-2,-3]
+//Output: -2
+//Explanation: Subarray [-2] has maximum sum -2.
+
+int maxSubarraySumCircular(std::vector<int>& A) {
+    int n = A.size();
+    if (n == 1) return A[0];
+
+    int dp0, dp1;
+    int dp2 = INT32_MIN;
+    dp0 = A[0];
+    for (int i = 1; i < A.size(); ++i) {
+        dp1 = std::max(dp0, 0) + A[i];
+        dp0 = dp1;
+        dp2 = std::max(dp1, dp2);
+    }
+    int ans1 = dp2;
+    if (n == 2) return ans1;
+
+    int dp00, dp01;
+    int dp02 = INT32_MAX;
+    dp00 = A[1];
+    for (int i = 1; i < A.size() - 1; ++i) {
+        dp01 = std::min(dp00, 0) + A[i];
+        dp00 = dp01;
+        dp02 = std::min(dp01, dp02);
+    }
+
+    int ans2 = std::accumulate(A.begin(), A.end(), 0) - dp02;
+    return std::max(ans1, ans2);
+}
+
+//int maxSubarraySumCircular(std::vector<int>& A) {
+//    int n = A.size();
+//    if(n == 1) return A[0];
+//    // 单区间最大子段和
+//    int sum = A[0], sum1 = A[0], ans1 = A[0];
+//    for(int i = 1; i < n; ++i)
+//    {
+//        sum += A[i];
+//        sum1 = A[i] + max(sum1, 0);
+//        ans1 = max(ans1, sum1);
+//    }
+//    if(n == 2) return ans1;
+//    // 双区间的最大字段和
+//    int sum2 = A[1], ans2 = A[1];
+//    for(int i = 1; i < n - 1; ++i)
+//    {
+//        sum2 = A[i] + min(sum2, 0);
+//        ans2 = min(ans2, sum2);
+//    }
+//    ans2 = sum - ans2;
+//    return max(ans1, ans2);
+//}
+
 /// Binary Search
 /// Heap
 
@@ -974,6 +1217,7 @@ int math172(int n) {
     return std::min(count2, count5);
 }
 // 30
+// O(log(n)), O(1)
 int math172Optimized(int n) {
     int count = 0;
     int k = 5;
@@ -1105,7 +1349,6 @@ int robOptimized(std::vector<int>& nums) {
 //  Output: false
 //
 
-/// ????????????????????????
 // dp[i] = first i characters can be wordbreak
 bool wordBreak(std::string s, std::vector<std::string>& wordDict) {
     std::vector<bool> dp(s.size() + 1, false);
@@ -1170,7 +1413,7 @@ int minDistance(std::string word1, std::string word2) {
         for (int j = 1; j <= word2.size(); ++j) {
             auto left = dp[i - 1][j] + 1;
             auto up = dp[i][j - 1] + 1;
-            auto upleft = word1[i - 1] == word2[j - 1] ? dp[i - 1][j - 1] : dp[i - 1][j - 1] + 1;
+            auto upleft = dp[i - 1][j - 1] + (word1[i - 1] == word2[j - 1] ? 0 : 1);
             dp[i][j] = std::min(std::min(left, up), upleft);
         }
     }
@@ -1219,5 +1462,11 @@ void testing123() {
 
     std::vector<int> jj = {2,3,0,1,4};
     jump2(jj);
+
+    std::vector<int> lls = {-2,1,-3,4,-1,2,1,-5,4};
+    maxSubArrayOptimized(lls);
+    std::string s1 = "aaaa";
+    std::string s2 = "dog cat cat dog";
+    wordPattern(s1, s2);
 }
 
