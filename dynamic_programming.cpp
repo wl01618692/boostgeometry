@@ -499,24 +499,24 @@ int minimumTotalOptimized(std::vector<std::vector<int>>& triangle) {
     if (triangle.size() == 1) return triangle[0][0];
     int n = triangle.size();
     int m = triangle.back().size();
-    std::vector<std::vector<int>> dp(n, std::vector<int>(m, 0));
-    dp[0][0] = triangle[0][0];
+    std::vector<int> dp(m, 0);
+    dp[0] = triangle[0][0];
     for (int i = 1; i < n; ++i) {
         for (int j = 0; j <= i; ++j) {
             if (j == 0) {
-                dp[i][j] = dp[i - 1][j] + triangle[i][j];
+                dp[j] += triangle[i][j];
                 continue;
             }
-            if (dp[i - 1][j] == 0) {
-                dp[i][j] = dp[i - 1][j - 1] + triangle[i][j];
+            if (dp[j] == 0) {
+                dp[j] = dp[j - 1] + triangle[i][j];
                 continue;
             }
-            dp[i][j] = std::min(dp[i - 1][j], dp[i - 1][j - 1]) + triangle[i][j];
+            dp[j] = std::min(dp[j], dp[j - 1]) + triangle[i][j];
         }
     }
 
     int minVal = INT32_MAX;
-    for (auto & elem: dp[n - 1]) {
+    for (auto & elem: dp) {
         minVal = std::min(minVal, elem);
     }
     return minVal;

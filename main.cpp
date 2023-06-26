@@ -20,6 +20,36 @@
 #include "unionfind.h"
 #include "lc150mustdo.h"
 using namespace std;
+
+    //seekg()
+//Moves the read position in a stream.//移动在流中读的位置
+//------------------------------------------------------------------------
+//basic_istream<Elem, Tr>& seekg(  //一个参数
+//        pos_type pos
+//);
+//basic_istream<Elem, Tr>& seekg(
+//        off_type off,                                     //两个参数
+//        ios_base::seekdir way
+//);
+//------------------------------------------------------------------------
+//
+//参数
+//        pos
+//The absolute position in which to move the read pointer.
+////移动读取指针的绝对位置
+//
+//off //偏移量
+//An offset to move the read pointer relative to way.
+//
+//way //  基地址
+//One of the ios_base::seekdir enumerations.
+//它有三个取值
+//        ios：：beg：表示输入流的开始位置
+//        ios：：cur：表示输入流的当前位置
+//        ios：：end：表示输入流的结束位置
+//
+
+
 class A {
 public:
     A() {
@@ -210,6 +240,9 @@ int main() {
     // 右值引用只能引用右值，不能引用左值。
     // 右值引用可以引用move以后的左值。
     int &&var1 = 10;
+
+    std::cout << -1e-9 << std::endl;
+    std::cout << -1e-9 << std::endl;
     return 0;
 }
 

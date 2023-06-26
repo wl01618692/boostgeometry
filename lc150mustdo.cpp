@@ -1004,7 +1004,7 @@ class Solution {
         }
         if (close < open) {
             cur.push_back(')');
-            backtrack(ans, cur, open, close + 1, n);
+            backtrack(ans, cur, ope     n, close + 1, n);
             cur.pop_back();
         }
     }
@@ -1045,6 +1045,11 @@ public:
 //Output: 23
 //Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
 
+// dp[i - 1], nums[i]
+// < 0, > 0     nums[i]
+// < 0, < 0,    nums[i]
+// > 0, > 0,    dp[i - 1] + nums[i]
+// > 0, < 0,    dp[i - 1] + nums[i]
 int maxSubArray(std::vector<int>& nums) {
     if (nums.empty()) return 0;
     std::vector<int> dp(nums.size(), 0);
@@ -1100,7 +1105,7 @@ int maxSubarraySumCircular(std::vector<int>& A) {
     int dp0, dp1;
     int dp2 = INT32_MIN;
     dp0 = A[0];
-    for (int i = 1; i < A.size(); ++i) {
+    for (int i = 1; i < n; ++i) {
         dp1 = std::max(dp0, 0) + A[i];
         dp0 = dp1;
         dp2 = std::max(dp1, dp2);
@@ -1111,7 +1116,7 @@ int maxSubarraySumCircular(std::vector<int>& A) {
     int dp00, dp01;
     int dp02 = INT32_MAX;
     dp00 = A[1];
-    for (int i = 1; i < A.size() - 1; ++i) {
+    for (int i = 1; i < n - 1; ++i) {
         dp01 = std::min(dp00, 0) + A[i];
         dp00 = dp01;
         dp02 = std::min(dp01, dp02);
