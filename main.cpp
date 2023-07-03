@@ -169,6 +169,10 @@ int rvalue_test() {
 }
 
 int main() {
+    std::vector<int> s123 = {1,2,3};
+    std::vector<int> s456 = {4,5,6};
+    s123 = std::move(s456);
+    std::cout << ((61) << 16) << std::endl;
     double ads = 3 / 2;
     std::cout << ads;
     std::vector<double> dd = {1, 2, 3};

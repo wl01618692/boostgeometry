@@ -1004,7 +1004,7 @@ class Solution {
         }
         if (close < open) {
             cur.push_back(')');
-            backtrack(ans, cur, ope     n, close + 1, n);
+            backtrack(ans, cur, open, close + 1, n);
             cur.pop_back();
         }
     }

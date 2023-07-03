@@ -138,8 +138,6 @@ bool lc383(std::string str1, std::string str2) {
     return true;
 }
 
-// 时间复杂度: O(n)
-// 空间复杂度: O(1)
 bool lc383_optimized(std::string str1, std::string str2) {
     int record[26] = {0};
     for (auto c: str2) {
@@ -155,13 +153,12 @@ bool lc383_optimized(std::string str1, std::string str2) {
     return true;
 }
 
+
+
+
 /// lc15
 //
 //给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
-//
-//注意： 答案中不可以包含重复的三元组。
-//
-//示例：
 //
 //给定数组 nums = [-1, 0, 1, 2, -1, -4]，
 // [-4, -1, -1, 0, 1, 2]，
