@@ -62,6 +62,8 @@ public:
 };
 
 #include <vector>
+#include <bitset>
+
 using namespace std;
 template <typename T>
 class Base {
@@ -168,7 +170,94 @@ int rvalue_test() {
     // 打印这三个左值的地址，都是一样的
 }
 
+//int main()
+//{
+//    int cx = 3, cy = 3; //中心坐标原点(平移)
+//    int x1 = 2, y1 = 9; //左上 第二象限
+//    int x2 = 2, y2 = 2; //左下 第三象限
+//    int x3 = 5, y3 = 1; //右下 第四象限
+//    int x4 = 6, y4 = 7; //右上 第一象限
+//
+//    cout << "y1 / x1: " << atan2(y1 - cy, x1 - cx) * 180 / 3.14159 << endl;
+//    cout << "y2 / x2: " << atan2(y2 - cy, x2 - cx) * 180 / 3.14159 << endl;
+//    cout << "y3 / x3: " << atan2(y3 - cy, x3 - cx) * 180 / 3.14159 << endl;
+//    cout << "y4 / x4: " << atan2(y4 - cy, x4 - cx) * 180 / 3.14159 << endl;
+//
+//    return 0;
+//}
+//
+//input
+//y1 / x1: 99.4624
+//y2 / x2: -135
+//
+//y3 / x3: -45
+//y4 / x4: 53.1301
+void tst_bitset() {
+    std::bitset<10> b("1100110010");
+    bool bit = b[3];  // 获取第 3 位
+    std::bitset<3> sub = b.to_ulong() < 3 > (2);  // 从第 2 位开始获取 3 位}
+    typedef std::size_t length_t, position_t; // the hints
+
+    // constructors:
+    constexpr std::bitset<4> b1;
+    constexpr std::bitset<4> b2{0xA}; // == 0B1010
+    std::bitset<4> b3{"0011"}; // can also be constexpr since C++23
+    std::bitset<8> b4{"ABBA", length_t(4), /*0:*/'A', /*1:*/'B'}; // == 0B0000'0110
+
+    // bitsets can be printed out to a stream:
+    std::cout << "b1:" << b1 << "; b2:" << b2 << "; b3:" << b3 << "; b4:" << b4 << '\n';
+
+    // bitset supports bitwise operations:
+    // ^ xor
+    b3 |= 0b0100; assert(b3 == 0b0111);
+    b3 &= 0b0011; assert(b3 == 0b0011);
+    b3 ^= std::bitset<4>{0b1100}; assert(b3 == 0b1111);
+
+    // operations on the whole set:
+    b3.reset(); assert(b3 == 0);
+    b3.set(); assert(b3 == 0b1111);
+    assert(b3.all() && b3.any() && !b3.none());
+    b3.flip(); assert(b3 == 0);
+
+    // operations on individual bits:
+    b3.set(std::size_t(1), true); assert(b3 == 0b0010);
+    b3.set(position_t(1), false); assert(b3 == 0);
+    b3.flip(position_t(2)); assert(b3 == 0b0100);
+    b3.reset(position_t(2)); assert(b3 == 0);
+
+    // subscript operator[] is supported:
+    b3[2] = true; assert(true == b3[2]);
+
+    // other operations:
+    assert(b3.count() == 1);
+    assert(b3.size() == 4);
+    assert(b3.to_ullong() == 0b0100ULL);
+    assert(b3.to_string() == "0100");
+}
+
+std::vector<int> leetcod260(std::vector<int> nums) {
+    int xor_two = nums[0];
+    int last_bit = 0;
+    std::vector<int> result = {0, 0};
+    for (int i = 1; i < nums.size(); i++)
+        xor_two ^= nums[i];
+    last_bit = xor_two & (~(xor_two - 1)); //相异为1，取异或的最后一个1，把两个元素区分，然后分别对两个数组异或
+    for (int i = 0; i < nums.size(); i++) {
+        if (nums[i] & last_bit)
+            result[0] ^= nums[i];
+        else
+            result[1] ^= nums[i];
+    }
+    return result;
+}
+
 int main() {
+    std::vector<int> input268 = {1, 2, 1, 3, 2, 5};
+    auto kkkk = leetcod260(input268);
+    tst_bitset();
+
+    std::cout << (-1 % 5) << std::endl;
+    std::cout << cos(2 * 3.14) << std::endl;
     std::vector<int> s123 = {1,2,3};
     std::vector<int> s456 = {4,5,6};
     s123 = std::move(s456);

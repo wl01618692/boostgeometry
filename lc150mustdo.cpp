@@ -1150,6 +1150,201 @@ int maxSubarraySumCircular(std::vector<int>& A) {
 //}
 
 /// Binary Search
+
+// 35. Search Insert Position
+//
+//Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.
+//
+//You must write an algorithm with O(log n) runtime complexity.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [1,3,5,6], target = 5
+//Output: 2
+//
+//Example 2:
+//
+//Input: nums = [1,3,5,6], target = 2
+//Output: 1
+//
+//Example 3:
+//
+//Input: nums = [1,3,5,6], target = 7
+//Output: 4
+
+bool binarySearch(vector<int>& nums, int target) {
+    int left = 0, right = nums.size() - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] == target) return true;
+        else if (nums[mid] > target) right = mid -1;
+        else left = mid + 1;
+    }
+    return left;
+}
+
+int searchInsert(vector<int>& nums, int target) {
+    int left = 0;
+    int right = nums.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] == target) {
+            return mid;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return left;
+}
+
+// 74. Search a 2D Matrix
+//You are given an m x n integer matrix matrix with the following two properties:
+//
+//    Each row is sorted in non-decreasing order.
+//    The first integer of each row is greater than the last integer of the previous row.
+//
+//Given an integer target, return true if target is in matrix or false otherwise.
+//
+//You must write a solution in O(log(m * n)) time complexity.
+//
+//
+//
+//Example 1:
+//
+//Input: matrix =
+// [[1,3,5,7],
+// [10,11,16,20],
+// [23,30,34,60]], target = 3
+//Output: true
+//
+//Example 2:
+//
+//Input: matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13
+//Output: false
+//
+//
+//
+//Constraints:
+//
+//    m == matrix.length
+//    n == matrix[i].length
+//    1 <= m, n <= 100
+//    -104 <= matrix[i][j], target <= 104
+
+
+
+
+// 时间复杂度O(log mn)
+// 空间复杂度O(1)
+bool searchMatrix(vector<vector<int>>& matrix, int target) {
+    int n = matrix.size();
+    int m = matrix[0].size();
+    if (m == 0 && n == 0) return false;
+    int left = 0, right = n * m - 1;
+    while (left <= right) {
+        auto mid = left + (right - left) / 2;
+        auto val = matrix[mid / n][mid % n];
+        if (target == val) {
+            return true;
+        } else if (target < val) {
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return false;
+}
+
+// 162. Find Peak Element
+//A peak element is an element that is strictly greater than its neighbors.
+//
+//Given a 0-indexed integer array nums, find a peak element, and return its index. If the array contains multiple peaks, return the index to any of the peaks.
+//
+//You may imagine that nums[-1] = nums[n] = -∞. In other words, an element is always considered to be strictly greater than a neighbor that is outside the array.
+//
+//You must write an algorithm that runs in O(log n) time.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [1,2,3,1]
+//Output: 2
+//Explanation: 3 is a peak element and your function should return the index number 2.
+//
+//Example 2:
+//
+//Input: nums = [1,2,1,3,5,6,4]
+//Output: 5
+//Explanation: Your function can return either index number 1 where the peak element is 2, or index number 5 where the peak element is 6.
+//
+
+int findPeakElement(vector<int>& nums) {
+    int left = 0, right = nums.size() - 1;
+    int output;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (mid == 0) {
+            if (1 < nums.size() && nums[mid] > nums[mid + 1]) {
+                return mid;
+            }
+        }
+
+        if (mid == nums.size() - 1) {
+            if (mid >= 1 && nums[mid] > nums[mid - 1]) {
+                return mid;
+            }
+        }
+
+        if (nums[mid] > nums[mid - 1] && nums[mid] > nums[mid + 1]) {
+            return mid;
+        } else if (nums[mid] < nums[mid - 1] && nums[mid] < nums[mid + 1]) {
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return -1;
+}
+
+// 33. Search in Rotated Sorted Array
+//
+//There is an integer array nums sorted in ascending order (with distinct values).
+//
+//Prior to being passed to your function, nums is possibly rotated at an unknown pivot index k (1 <= k < nums.length)
+// such that the resulting array is [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]] (0-indexed).
+// For example, [0,1,2,4,5,6,7] might be rotated at pivot index 3 and become [4,5,6,7,0,1,2].
+//
+//Given the array nums after the possible rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums.
+//
+//You must write an algorithm with O(log n) runtime complexity.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [4,5,6,7,0,1,2], target = 0
+//Output: 4
+//
+//Example 2:
+//
+//Input: nums = [4,5,6,7,0,1,2], target = 3
+//Output: -1
+//
+//Example 3:
+//
+//Input: nums = [1], target = 0
+//Output: -1
+//
+int search(vector<int>& nums, int target) {
+
+}
+
 /// Heap
 
 // 215. Kth Largest Element in an Array
@@ -1170,6 +1365,7 @@ int maxSubarraySumCircular(std::vector<int>& A) {
 // Output: 4
 
 int findKthLargest(std::vector<int>& nums, int k) {
+    // default max heap
     std::priority_queue<int> pq(nums.begin(), nums.end());
     while (k != 1) {
         pq.pop();
@@ -1179,6 +1375,235 @@ int findKthLargest(std::vector<int>& nums, int k) {
 }
 
 
+// 295. Find Median from Data Stream
+//
+//The median is the middle value in an ordered integer list. If the size of the list is even, there is no middle value, and the median is the mean of the two middle values.
+//
+//    For example, for arr = [2,3,4], the median is 3.
+//    For example, for arr = [2,3], the median is (2 + 3) / 2 = 2.5.
+//
+//Implement the MedianFinder class:
+//
+//    MedianFinder() initializes the MedianFinder object.
+//    void addNum(int num) adds the integer num from the data stream to the data structure.
+//    double findMedian() returns the median of all elements so far. Answers within 10-5 of the actual answer will be accepted.
+//
+//
+//
+//Example 1:
+//
+//Input
+//["MedianFinder", "addNum", "addNum", "findMedian", "addNum", "findMedian"]
+//[[], [1], [2], [], [3], []]
+//Output
+//[null, null, null, 1.5, null, 2.0]
+//
+//Explanation
+//MedianFinder medianFinder = new MedianFinder();
+//medianFinder.addNum(1);    // arr = [1]
+//medianFinder.addNum(2);    // arr = [1, 2]
+//medianFinder.findMedian(); // return 1.5 (i.e., (1 + 2) / 2)
+//medianFinder.addNum(3);    // arr[1, 2, 3]
+//medianFinder.findMedian(); // return 2.0
+//
+//
+//
+//Constraints:
+//
+//    -105 <= num <= 105
+//    There will be at least one element in the data structure before calling findMedian.
+//    At most 5 * 104 calls will be made to addNum and findMedian.
+//
+//
+//
+//Follow up:
+//
+//    If all integer numbers from the stream are in the range [0, 100], how would you optimize your solution?
+//    If 99% of all integer numbers from the stream are in the range [0, 100], how would you optimize your solution?
+
+// find max/min time complexity O(1)
+// insertion/deletion time complexit O(logn)
+
+// vector
+// sorted O(NlogN)
+// find max/min O(n)
+// insertion/deletion O(n)
+
+class MedianFinder {
+public:
+    MedianFinder() {
+
+    }
+
+    void addNum(int num) {
+        if (left.empty() || num <= left.top()) left.push(num);
+        else right.push(num);
+
+        while (left.size() > right.size()) {
+            auto tmp = left.top();
+            left.pop();
+            right.push(tmp);
+        }
+
+        while (right.size() - 1 > left.size()) {
+            auto tmp = right.top();
+            right.pop();
+            left.push(tmp);
+        }
+    }
+
+    double findMedian() {
+        if (left.size() != right.size()) return left.top();
+        return (left.top() + right.top()) / 2.0;
+    }
+
+private:
+    priority_queue<int> left;
+    priority_queue<int,vector<int>,less<>> right;
+};
+
+// 502. IPO
+//
+//Suppose LeetCode will start its IPO soon. In order to sell a good price of its shares to Venture Capital, LeetCode would like to work on some projects to increase its capital before the IPO.
+// Since it has limited resources, it can only finish at most k distinct projects before the IPO. Help LeetCode design the best way to maximize its total capital after finishing at most k distinct projects.
+//
+//You are given n projects where the ith project has a pure profit profits[i] and a minimum capital of capital[i] is needed to start it.
+//
+//Initially, you have w capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.
+//
+//Pick a list of at most k distinct projects from given projects to maximize your final capital, and return the final maximized capital.
+//
+//The answer is guaranteed to fit in a 32-bit signed integer.
+//
+//
+//
+//Example 1:
+//
+//Input: k = 2, w = 0, profits = [1,2,3], capital = [0,1,1]
+//Output: 4
+//Explanation: Since your initial capital is 0, you can only start the project indexed 0.
+//After finishing it you will obtain profit 1 and your capital becomes 1.
+//With capital 1, you can either start the project indexed 1 or the project indexed 2.
+//Since you can choose at most 2 projects, you need to finish the project indexed 2 to get the maximum capital.
+//Therefore, output the final maximized capital, which is 0 + 1 + 3 = 4.
+//
+//Example 2:
+//
+//Input: k = 3, w = 0, profits = [1,2,3], capital = [0,1,2]
+//Output: 6
+
+int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
+
+}
+
+class Solution502 {
+public:
+    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
+        int n = profits.size();
+        int curr = 0;
+        priority_queue<int, vector<int>, less<>> pq;
+        vector<pair<int,int>> arr;
+        for (int i = 0; i < n; ++i) {
+            arr.emplace_back(capital[i], profits[i]);
+        }
+        sort(arr.begin(), arr.end());//以first为准排序arr，默认为升序，即需求资本从小到大
+        //大循环：投资k个项目
+        for (int i = 0; i < k; ++i) {
+            //将需求资本小于等于已有资本的项目的利润压入大顶堆
+            while (curr < n && arr[curr].first <= w) {
+                pq.push(arr[curr].second);
+                curr++;
+            }
+
+            if (!pq.empty()) {
+                w += pq.top();
+                pq.pop();
+            } else {
+                break;
+            }
+        }
+        return w;
+    }
+};
+
+// 373. Find K Pairs with Smallest Sums
+//
+//You are given two integer arrays nums1 and nums2 sorted in non-decreasing order and an integer k.
+//
+//Define a pair (u, v) which consists of one element from the first array and one element from the second array.
+//
+//Return the k pairs (u1, v1), (u2, v2), ..., (uk, vk) with the smallest sums.
+//
+//
+//
+//Example 1:
+//
+//Input: nums1 = [1,7,11], nums2 = [2,4,6], k = 3
+//Output: [[1,2],[1,4],[1,6]]
+//Explanation: The first 3 pairs are returned from the sequence: [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
+//
+//Example 2:
+//
+//Input: nums1 = [1,1,2], nums2 = [1,2,3], k = 2
+//Output: [[1,1],[1,1]]
+//Explanation: The first 2 pairs are returned from the sequence: [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]
+//
+//Example 3:
+//
+//Input: nums1 = [1,2], nums2 = [3], k = 3
+//Output: [[1,3],[2,3]]
+//Explanation: All possible pairs are returned from the sequence: [1,3],[2,3]
+
+class mycomparison {
+public:
+    bool operator()(const tuple<int, int, int>& lhs, const tuple<int, int, int>& rhs) {
+        return std::get<2>(lhs) > std::get<2>(rhs);
+    }
+};
+
+//vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+//    std::map<std::pair<int, int>, int> mp;
+//    std::vector<std::vector<int>> output;
+//    for (auto elem1: nums1) {
+//        for (auto elem2: nums2) {
+//            mp[std::make_pair(elem1, elem2)] =  elem1 + elem2;
+//        }
+//    }
+//
+//    // priority_queue<Type,Container,Functional> name;
+//    priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, mycomparison> pq;
+//    for (auto itr = mp.begin(); itr != mp.end(); ++itr) {
+//        pq.push(std::make_tuple(itr->first.first, itr->first.second,itr->second));
+//    }
+//
+//    while (k != 0 && !pq.empty()) {
+//        auto tmp = pq.top();
+//        std::vector<int> path = {std::get<0>(tmp), std::get<1>(tmp)};
+//        output.push_back(path);
+//        pq.pop();
+//        --k;
+//    }
+//    return output;
+//}
+
+vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+    auto comp = [](vector<int> &p1, vector<int> &p2) {
+        return p1[0] + p1[1] < p2[0] + p2[1];
+    };
+    priority_queue<vector<int>, vector<vector<int>>, decltype(comp)> pq(comp);
+    for (auto x: nums1) {
+        for (auto y: nums2) {
+            pq.push({x, y});
+            if (pq.size() > k) pq.pop();
+        }
+    }
+    vector<vector<int>> res;
+    while (!pq.empty()) {
+        res.push_back(pq.top());
+        pq.pop();
+    }
+    return res;
+}
 
 /// Bit Manipulation
 /// Math
