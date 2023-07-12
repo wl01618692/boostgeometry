@@ -64,6 +64,7 @@ std::vector<int> singleNumber(std::vector<int> &nums) {
             result[1] ^= nums[i];
     }
     return result;
+
 }
 
 

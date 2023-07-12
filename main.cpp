@@ -19,6 +19,7 @@
 #include "hashTable.h"
 #include "unionfind.h"
 #include "lc150mustdo.h"
+#include<cstring>
 using namespace std;
 
     //seekg()
@@ -235,23 +236,81 @@ void tst_bitset() {
     assert(b3.to_string() == "0100");
 }
 
+// void *memset(void *s, int ch, size_t n);
+void memsetTest() {
+    // valid
+//    char array[4];
+//    memset(array,'1',4);
+
+    int array[4];
+    memset(array,1,16); //int所占内存为4字节的情况
+    memset(array,1,sizeof(array));
+}
+
+//class Solution {
+//public int[] helper(TreeNode node) {
+//        // return [rob this node, not rob this node]
+//        if (node == null) {
+//            return new int[] { 0, 0 };
+//        }
+//        int left[] = helper(node.left);
+//        int right[] = helper(node.right);
+//        // if we rob this node, we cannot rob its children
+//        int rob = node.val + left[1] + right[1];
+//        // else, we free to choose rob its children or not
+//        int notRob = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+//
+//        return new int[] { rob, notRob };
+//    }
+//
+//public int rob(TreeNode root) {
+//        int[] answer = helper(root);
+//        return Math.max(answer[0], answer[1]);
+//    }
+//}
+
 std::vector<int> leetcod260(std::vector<int> nums) {
     int xor_two = nums[0];
     int last_bit = 0;
     std::vector<int> result = {0, 0};
     for (int i = 1; i < nums.size(); i++)
         xor_two ^= nums[i];
-    last_bit = xor_two & (~(xor_two - 1)); //相异为1，取异或的最后一个1，把两个元素区分，然后分别对两个数组异或
-    for (int i = 0; i < nums.size(); i++) {
-        if (nums[i] & last_bit)
-            result[0] ^= nums[i];
+//    last_bit = xor_two & (~(xor_two - 1)); //相异为1，取异或的最后一个1，把两个元素区分，然后分别对两个数组异或
+//    for (int i = 0; i < nums.size(); i++) {
+//        if (nums[i] & last_bit)
+//            result[0] ^= nums[i];
+//        else
+//            result[1] ^= nums[i];
+//    }
+//    return result;
+
+    int pos = 0;
+    while(pos < 32)
+    {
+        if(xor_two & (1<<pos))
+            break;
         else
-            result[1] ^= nums[i];
+            ++pos;
     }
-    return result;
+
+    int x1 = 0;
+    int x2 = 0;
+    for (int i = 0;i < nums.size();++i)
+    {
+        if(nums[i] & (1<<pos))
+            x1 ^= nums[i];
+        else
+            x2 ^= nums[i];
+    }
+
+    result[0] = x1;
+    result[1] = x2;
+
 }
 
 int main() {
+    std::string sb = "abcde";
+    auto kksd = sb.substr(0, 2);
     std::vector<int> input268 = {1, 2, 1, 3, 2, 5};
     auto kkkk = leetcod260(input268);
     tst_bitset();

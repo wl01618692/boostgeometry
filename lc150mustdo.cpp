@@ -1236,11 +1236,6 @@ int searchInsert(vector<int>& nums, int target) {
 //    1 <= m, n <= 100
 //    -104 <= matrix[i][j], target <= 104
 
-
-
-
-// 时间复杂度O(log mn)
-// 空间复杂度O(1)
 bool searchMatrix(vector<vector<int>>& matrix, int target) {
     int n = matrix.size();
     int m = matrix[0].size();
@@ -1286,7 +1281,6 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
 
 int findPeakElement(vector<int>& nums) {
     int left = 0, right = nums.size() - 1;
-    int output;
     while (left <= right) {
         int mid = left + (right - left) / 2;
         if (mid == 0) {
@@ -1296,14 +1290,14 @@ int findPeakElement(vector<int>& nums) {
         }
 
         if (mid == nums.size() - 1) {
-            if (mid >= 1 && nums[mid] > nums[mid - 1]) {
+            if (nums.size() >= 2 && nums[mid] > nums[mid - 1]) {
                 return mid;
             }
         }
 
         if (nums[mid] > nums[mid - 1] && nums[mid] > nums[mid + 1]) {
             return mid;
-        } else if (nums[mid] < nums[mid - 1] && nums[mid] < nums[mid + 1]) {
+        } else if (nums[mid] < nums[mid - 1] && nums[mid] > nums[mid + 1]) {
             right = mid - 1;
         } else {
             left = mid + 1;

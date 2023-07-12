@@ -58,6 +58,8 @@ class permutationSolution {
         // k - path <= n - i + 1
         // i <= n - k + path.size() + 1
         // 4 3 0, n - k + path = 1, i = 1
+        // 举个例子，n = 4，k = 3， 目前已经选取的元素为0（path.size为0），n - (k - 0) + 1 即 4 - ( 3 - 0) + 1 = 2。
+        //从2开始搜索都是合理的，可以是组合[2, 3, 4]。
         for (int i = startIndex; i <= n - k + path.size() + 1; ++i) {
             path.push_back(i);
             backtracking_optimized(n, k, i + 1);
@@ -65,6 +67,8 @@ class permutationSolution {
         }
     }
 
+    // 1 2 3 4
+    // 234 34 4
     void permutation(int n, int k) {
         backtracking(4, 2, 1);
         for (auto elem: result) {
@@ -207,23 +211,21 @@ vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
 class Solution {
 private:
     vector<vector<string>> result;
-    vector<string> path; // 放已经回文的子串
+    vector<string> path;
     void backtracking (const string& s, int startIndex) {
-        // 如果起始位置已经大于s的大小，说明已经找到了一组分割方案了
         if (startIndex >= s.size()) {
             result.push_back(path);
             return;
         }
         for (int i = startIndex; i < s.size(); i++) {
-            if (isPalindrome(s, startIndex, i)) {   // 是回文子串
-                // 获取[startIndex,i]在s中的子串
+            if (isPalindrome(s, startIndex, i)) {
                 string str = s.substr(startIndex, i - startIndex + 1);
                 path.push_back(str);
-            } else {                                // 不是回文，跳过
+            } else {
                 continue;
             }
-            backtracking(s, i + 1); // 寻找i+1为起始位置的子串
-            path.pop_back(); // 回溯过程，弹出本次已经填在的子串
+            backtracking(s, i + 1);
+            path.pop_back();
         }
     }
     bool isPalindrome(const string& s, int start, int end) {
