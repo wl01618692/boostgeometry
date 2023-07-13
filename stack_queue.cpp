@@ -401,9 +401,9 @@ std::vector<int> lc739(std::vector<int> temp) {
     std::stack<int> s;
     std::vector<int> output(temp.size(), 0);
     for (int i = 0; i < temp.size(); ++i) {
-        while (!s.empty() && temp[s.top()] < temp[i]) {
+        while (!s.empty() || temp[i] > temp[s.top()]) {
             auto tmp = s.top();
-            output[tmp] = i - s.top();
+            output[tmp] = i - tmp;
             s.pop();
         }
         s.push(i);
@@ -411,6 +411,7 @@ std::vector<int> lc739(std::vector<int> temp) {
     return output;
 }
 
+// lc 496
 // 给你两个 没有重复元素 的数组 nums1 和 nums2 ，其中nums1 是 nums2 的子集。
 //
 //请你找出 nums1 中每个元素在 nums2 中的下一个比其大的值。
@@ -456,7 +457,43 @@ std::vector<int> lc496(std::vector<int> vec1, std::vector<int> vec2) {
     return output;
 }
 
+// lc503
+// 给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），输出每个元素的下一个更大元素。数字 x 的下一个更大的元素是按数组遍历顺序，这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
+//
+//示例 1:
+//
+//    输入: [1,2,1]
+//    输出: [2,-1,2]
+//    解释: 第一个 1 的下一个更大的数是 2；数字 2 找不到下一个更大的数；第二个 1 的下一个最大的数需要循环搜索，结果也是 2。
+//
+//提示:
+//
+//    1 <= nums.length <= 10^4
+//    -10^9 <= nums[i] <= 10^9
 
+vector<int> nextGreaterElements(vector<int>& nums) {
+    std::vector<int> result(2 * nums.size(), 0);
+    std::vector<int> nums1(nums.begin(), nums.end());
+    nums1.insert(nums1.end(), nums.begin(), nums.end());
+
+    std::stack<int> s;
+    for (int i = 0; i < nums1.size(); ++i) {
+        auto elem = nums1[i];
+        while (!s.empty() && nums1[s.top()] < elem) {
+            auto val = s.top();
+            s.pop();
+            result[val] = elem;
+        }
+        s.push(i);
+    }
+    while (!s.empty()) {
+        auto val = s.top();
+        s.pop();
+        result[val] = -1;
+    }
+    result.resize(result.size() / 2);
+    return result;
+}
 
 // 844.比较含退格的字符串
 //

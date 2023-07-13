@@ -370,6 +370,8 @@ int main() {
     monotoneIncreasingDigits(41114111);
     backspaceCompare("ab#c", "ad#c");
     lc844("a##c", "#a#c");
+    std::vector<int> i23 = {1, 2, 1};
+    nextGreaterElements(i23);
     lc2390("erase*****");
     std::vector<int> sss = {73, 74, 75, 71, 69, 72, 76, 73};
     lc739(sss);

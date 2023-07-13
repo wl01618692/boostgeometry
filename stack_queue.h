@@ -13,4 +13,5 @@ std::vector<int> lc739(std::vector<int> temp);
 bool backspaceCompare(std::string s, std::string t);
 bool lc844(std::string s, std::string t);
 std::string lc2390(std::string s);
+std::vector<int> nextGreaterElements(std::vector<int>& nums);
 #endif //BOOSTGEOMETRY_STACK_QUEUE_H

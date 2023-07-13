@@ -250,17 +250,16 @@ bool canJump(std::vector<int>& nums) {
 
 int jump(std::vector<int>& nums) {
     if (nums.size() == 1) return 0;
-    int curDistance = 0;    // 当前覆盖最远距离下标
-    int ans = 0;            // 记录走的最大步数
-    int nextDistance = 0;   // 下一步覆盖最远距离下标
-    for (int i = 0; i < nums.size(); i++) {
-        nextDistance = std::max(nums[i] + i, nextDistance);  // 更新下一步覆盖最远距离下标
-        if (i == curDistance) {                         // 遇到当前覆盖最远距离下标
-            if (curDistance < nums.size() - 1) {       // 如果当前覆盖最远距离下标不是终点
-                ans++;                                  // 需要走下一步
-                curDistance = nextDistance;             // 更新当前覆盖最远距离下标（相当于加油了）
-                if (nextDistance >= nums.size() - 1) break; // 下一步的覆盖范围已经可以达到终点，结束循环
-            } else break;                               // 当前覆盖最远距到达集合终点，不用做ans++操作了，直接结束
+    int ans = 0;
+    int curDis = 0, nextDis = 0;
+    for (int i = 0; i < nums.size(); ++i) {
+        nextDis = std::max(nextDis, i + nums[i]);
+        if (curDis == i) {
+            if (curDis < nums.size()) {
+                curDis = nextDis;
+                ++ans;
+                if (nextDis >= nums.size() - 1) break;
+            } else break;
         }
     }
     return ans;
@@ -401,7 +400,7 @@ int lc105(std::vector<int> nums, int k) {
 
 int canCompleteCircuit(std::vector<int>& gas, std::vector<int>& cost) {
     for (int i = 0; i < cost.size(); i++) {
-        int rest = gas[i] - cost[i]; // 记录剩余油量
+        int rest = gas[i] - cost[i];
         int index = (i + 1) % cost.size();
         while (rest > 0 && index != i) { // 模拟以i为起点行驶一圈（如果有rest==0，那么答案就不唯一了）
             rest += gas[index] - cost[index];
@@ -452,6 +451,15 @@ int canCompleteCircuit1(std::vector<int>& gas, std::vector<int>& cost) {
 //
 //    输入：people = [[7,0],[4,4],[7,1],[5,0],[6,1],[5,2]]
 //    输出：[[5,0],[7,0],[5,2],[6,1],[4,4],[7,1]]
+//      7,0 7,1 6,1, 5,0 5,2 4,4
+
+//      7,0
+//      7,0 7,1
+//      7,0 6,1 7,1
+//      5,0 7,0 6,1 7,1
+//      5,0 7,0 6,1 7,1
+//      5,0 7,0 5,2 6,1 7,1
+//      5,0 7,0 5,2 6,1 4,4 7,1
 //    解释：
 //        编号为 0 的人身高为 5 ，没有身高更高或者相同的人排在他前面。
 //        编号为 1 的人身高为 7 ，没有身高更高或者相同的人排在他前面。
@@ -474,6 +482,203 @@ int canCompleteCircuit1(std::vector<int>& gas, std::vector<int>& cost) {
 //
 //题目数据确保队列可以被重建
 
+bool comp(std::vector<int> lhs, std::vector<int> rhs) {
+    if (lhs[0] == rhs[0]) {
+        return rhs > lhs;
+    }
+    return lhs[0] > rhs[0];
+}
+
+
 std::vector<std::vector<int>> lc406(std::vector<std::vector<int>> people) {
+    std::sort(people.begin(), people.end(), comp);
+    std::vector<std::vector<int>> output;
+    for (auto elem: people) {
+        if (output.size() <= elem[1]) {
+            output.push_back(elem);
+        } else {
+            output.insert(output.begin() + elem[1], elem);
+        }
+    }
+    return output;
+}
+
+
+
+// 806
+// 在柠檬水摊上，每一杯柠檬水的售价为 5 美元。
+//
+//顾客排队购买你的产品，（按账单 bills 支付的顺序）一次购买一杯。
+//
+//每位顾客只买一杯柠檬水，然后向你付 5 美元、10 美元或 20 美元。你必须给每个顾客正确找零，也就是说净交易是每位顾客向你支付 5 美元。
+//
+//注意，一开始你手头没有任何零钱。
+//
+//如果你能给每位顾客正确找零，返回 true ，否则返回 false 。
+//
+//示例 1：
+//
+//    输入：[5,5,5,10,20]
+//    输出：true
+//    解释：
+//        前 3 位顾客那里，我们按顺序收取 3 张 5 美元的钞票。
+//        第 4 位顾客那里，我们收取一张 10 美元的钞票，并返还 5 美元。
+//        第 5 位顾客那里，我们找还一张 10 美元的钞票和一张 5 美元的钞票。
+//        由于所有客户都得到了正确的找零，所以我们输出 true。
+//
+//示例 2：
+//
+//    输入：[5,5,10]
+//    输出：true
+//
+//示例 3：
+//
+//    输入：[10,10]
+//    输出：false
+//
+//示例 4：
+//
+//    输入：[5,5,10,10,20]
+//    输出：false
+//    解释：
+//        前 2 位顾客那里，我们按顺序收取 2 张 5 美元的钞票。
+//        对于接下来的 2 位顾客，我们收取一张 10 美元的钞票，然后返还 5 美元。
+//        对于最后一位顾客，我们无法退回 15 美元，因为我们现在只有两张 10 美元的钞票。
+//        由于不是每位顾客都得到了正确的找零，所以答案是 false。
+//
+//提示：
+//
+//    0 <= bills.length <= 10000
+//    bills[i] 不是 5 就是 10 或是 20
+//
+
+bool lemonadeChange(std::vector<int>& bills) {
+    int count5 = 0, count10 = 0, count20 = 0;
+    for (auto elem: bills) {
+        if (elem == 5) {
+            count5++;
+            continue;
+        } else if (elem == 10) {
+            if (count5 == 0) {
+                return false;
+            } else {
+                count10++;
+                count5--;
+            }
+        } else {
+            if (count10 >= 1 && count5 >= 1) {
+                count10--;
+                count5--;
+                count20++;
+            } else if (count5 >= 3) {
+                count5 -=3;
+                count20++;
+            } else {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+//452. 用最少数量的箭引爆气球
+//
+//在二维空间中有许多球形的气球。对于每个气球，提供的输入是水平方向上，气球直径的开始和结束坐标。由于它是水平的，所以纵坐标并不重要，因此只要知道开始和结束的横坐标就足够了。开始坐标总是小于结束坐标。
+//
+//一支弓箭可以沿着 x 轴从不同点完全垂直地射出。在坐标 x 处射出一支箭，若有一个气球的直径的开始和结束坐标为 xstart，xend，
+//
+// 且满足  xstart ≤ x ≤ xend，则该气球会被引爆。可以射出的弓箭的数量没有限制。 弓箭一旦被射出之后，可以无限地前进。我们想找到使得所有气球全部被引爆，所需的弓箭的最小数量。
+//
+//给你一个数组 points ，其中 points [i] = [xstart,xend] ，返回引爆所有气球所必须射出的最小弓箭数。
+//
+//示例 1：
+//
+//    输入：points = [[10,16],[2,8],[1,6],[7,12]]
+//    输出：2
+//    解释：对于该样例，x = 6 可以射爆 [2,8],[1,6] 两个气球，以及 x = 11 射爆另外两个气球
+//
+// [1,6]    [2,8]   [7,12]      [10,16]
+//示例 2：
+//
+//    输入：points = [[1,2],[3,4],[5,6],[7,8]]
+//    输出：4
+//
+//示例 3：
+//
+//    输入：points = [[1,2],[2,3],[3,4],[4,5]]
+//    输出：2
+//
+//示例 4：
+//
+//    输入：points = [[1,2]]
+//    输出：1
+//
+//示例 5：
+//
+//    输入：points = [[2,3],[2,3]]
+//    输出：1
+//
+//提示：
+//
+//    0 <= points.length <= 10^4
+//    points[i].length == 2
+//    -2^31 <= xstart < xend <= 2^31 - 1
+
+
+bool mySort(std::vector<int> lhs, std::vector<int> rhs) {
+    if (lhs[0] == rhs[0]) {
+        return lhs[1] < rhs[1];
+    }
+    return lhs[0] < rhs[0];
+}
+
+
+int findMinArrowShots(std::vector<std::vector<int>>& points) {
+    int count = 0;
+    std::sort(points.begin(), points.end(), mySort);
+    for (int i = 1; i < points.size(); ++i) {
+        if (points[i][0] > points[i - 1][1]) {
+            ++count;
+            continue;
+        } else {
+            points[i][1] = std::min(points[i - 1][1], points[i][1]);
+        }
+    }
+    return count;
+}
+
+
+//435. 无重叠区间
+//
+//给定一个区间的集合，找到需要移除区间的最小数量，使剩余区间互不重叠。
+//
+//注意: 可以认为区间的终点总是大于它的起点。 区间 [1,2] 和 [2,3] 的边界相互“接触”，但没有相互重叠。
+//
+//示例 1:
+//
+//    输入: [ [1,2], [2,3], [3,4], [1,3] ]
+//    输出: 1
+//    解释: 移除 [1,3] 后，剩下的区间没有重叠。
+//
+//示例 2:
+//
+//    输入: [ [1,2], [1,2], [1,2] ]
+//    输出: 2
+//    解释: 你需要移除两个 [1,2] 来使剩下的区间没有重叠。
+//
+//示例 3:
+//
+//    输入: [ [1,2], [2,3] ]
+//    输出: 0
+//    解释: 你不需要移除任何区间，因为它们已经是无重叠的了。
+//
+
+bool mySort435(std::vector<int> lhs, std::vector<int> rhs) {
 
 }
+
+
+int eraseOverlapIntervals(std::vector<std::vector<int>>& intervals) {
+    std::sort(intervals.begin(), intervals.end(), mySort435);
+}
+
