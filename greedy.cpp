@@ -624,6 +624,8 @@ bool lemonadeChange(std::vector<int>& bills) {
 //    points[i].length == 2
 //    -2^31 <= xstart < xend <= 2^31 - 1
 
+//     时间复杂度：O(nlog n)，因为有一个快排
+//    空间复杂度：O(1)，有一个快排，最差情况(倒序)时，需要n次递归调用。因此确实需要O(n)的栈空间
 
 bool mySort(std::vector<int> lhs, std::vector<int> rhs) {
     if (lhs[0] == rhs[0]) {
@@ -673,12 +675,61 @@ int findMinArrowShots(std::vector<std::vector<int>>& points) {
 //    解释: 你不需要移除任何区间，因为它们已经是无重叠的了。
 //
 
-bool mySort435(std::vector<int> lhs, std::vector<int> rhs) {
 
-}
+//     时间复杂度：O(nlog n) ，有一个快排
+//    空间复杂度：O(n)，有一个快排，最差情况(倒序)时，需要n次递归调用。因此确实需要O(n)的栈空间
+
+class Solution435 {
+public:
+    static bool cmp (const std::vector<int>& a, const std::vector<int>& b) {
+        return a[0] < b[0]; // 左边界排序
+    }
+    int eraseOverlapIntervals(std::vector<std::vector<int>>& intervals) {
+        if (intervals.size() == 0) return 0;
+        std::sort(intervals.begin(), intervals.end(), cmp);
+        int count = 0; // 注意这里从0开始，因为是记录重叠区间
+        int end = intervals[0][1]; // 记录区间分割点
+        for (int i = 1; i < intervals.size(); i++) {
+            if (intervals[i][0] >= end)  end = intervals[i][1]; // 无重叠的情况
+            else { // 重叠情况
+                end = std::min(end, intervals[i][1]);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    int eraseOverlapIntervals2(std::vector<std::vector<int>>& intervals) {
+        if (intervals.size() == 0) return 0;
+        std::sort(intervals.begin(), intervals.end(), cmp);
+        int count = 0; // 注意这里从0开始，因为是记录重叠区间
+        for (int i = 1; i < intervals.size(); i++) {
+            if (intervals[i][0] < intervals[i - 1][1]) { //重叠情况
+                intervals[i][1] = std::min(intervals[i - 1][1], intervals[i][1]);
+                count++;
+            }
+        }
+        return count;
+    }
+};
 
 
-int eraseOverlapIntervals(std::vector<std::vector<int>>& intervals) {
-    std::sort(intervals.begin(), intervals.end(), mySort435);
+//763.划分字母区间
+//
+//字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。返回一个表示每个字符串片段的长度的列表。
+//
+//示例：
+//
+//    输入：S = "ababcbacadefegdehijhklij"
+//    输出：[9,7,8] 解释： 划分结果为 "ababcbaca", "defegde", "hijhklij"。 每个字母最多出现在一个片段中。 像 "ababcbacadefegde", "hijhklij" 的划分是错误的，因为划分的片段数较少。
+//
+//提示：
+//
+//    S的长度在[1, 500]之间。
+//    S只包含小写字母 'a' 到 'z' 。
+//
+
+std::vector<int> partitionLabels(std::string S) {
+
 }
 

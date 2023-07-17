@@ -227,9 +227,124 @@ int maxProfit122(vector<int>& prices) {
     return res;
 }
 
+// 28. Find the Index of the First Occurrence in a String
+//
+//Given two strings needle and haystack, return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+//
+//
+//
+//Example 1:
+//
+//Input: haystack = "sadbutsad", needle = "sad"
+//Output: 0
+//Explanation: "sad" occurs at index 0 and 6.
+//The first occurrence is at index 0, so we return 0.
+//
+//Example 2:
+//
+//Input: haystack = "leetcode", needle = "leeto"
+//Output: -1
+//Explanation: "leeto" did not occur in "leetcode", so we return -1.
+//
+
+int strStr(std::string haystack, std::string needle) {
+    if (needle.empty()) return 0;
+    if (haystack.empty()) return -1;
+
+    int left = 0, right = 0;
+    int index = -1;
+    while (left < haystack.size()) {
+        auto tmp_left = left;
+        while (haystack[tmp_left] == needle[right]) {
+            tmp_left++;
+            right++;
+        }
+        if (right == needle.size()) {
+            return left;
+        }
+        right = 0;
+        ++left;
+    }
+    return index;
+}
+
 /// Two pointers
 /// Sliding window
 /// Matrix
+// 36. Valid Sudoku
+//Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
+//
+//    Each row must contain the digits 1-9 without repetition.
+//    Each column must contain the digits 1-9 without repetition.
+//    Each of the nine 3 x 3 sub-boxes of the grid must contain the digits 1-9 without repetition.
+//
+//Note:
+//
+//    A Sudoku board (partially filled) could be valid but is not necessarily solvable.
+//    Only the filled cells need to be validated according to the mentioned rules.
+//
+//
+//
+//Example 1:
+//
+//Input: board =
+//[["5","3",".",".","7",".",".",".","."]
+//,["6",".",".","1","9","5",".",".","."]
+//,[".","9","8",".",".",".",".","6","."]
+//,["8",".",".",".","6",".",".",".","3"]
+//,["4",".",".","8",".","3",".",".","1"]
+//,["7",".",".",".","2",".",".",".","6"]
+//,[".","6",".",".",".",".","2","8","."]
+//,[".",".",".","4","1","9",".",".","5"]
+//,[".",".",".",".","8",".",".","7","9"]]
+//Output: true
+//
+//Example 2:
+//
+//Input: board =
+//[["8","3",".",".","7",".",".",".","."]
+//,["6",".",".","1","9","5",".",".","."]
+//,[".","9","8",".",".",".",".","6","."]
+//,["8",".",".",".","6",".",".",".","3"]
+//,["4",".",".","8",".","3",".",".","1"]
+//,["7",".",".",".","2",".",".",".","6"]
+//,[".","6",".",".",".",".","2","8","."]
+//,[".",".",".","4","1","9",".",".","5"]
+//,[".",".",".",".","8",".",".","7","9"]]
+//Output: false
+//Explanation: Same as Example 1, except with the 5 in the top left corner being modified to 8. Since there are two 8's in the top left 3x3 sub-box, it is invalid.
+bool isValidSudoku(vector<vector<char>>& board) {
+    std::vector<int> row(9, 0);
+    std::vector<int> col(9, 0);
+    std::vector<int> box(9, 0);
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            if (board[i][j] == '.') continue;
+
+            int elem = board[i][j] - '0';
+            int pos = 1 << (elem - 1);
+
+            if ((row[i] & pos) > 0) {
+                return false;
+            }
+            row[i] |= pos;
+
+            if ((col[j] & pos) > 0) {
+                return false;
+            }
+            col[j] |= pos;
+
+            auto k = (i / 3) * 3 + j / 3;
+            if ((box[k] & pos) > 0) {
+                return false;
+            }
+            box[k] |= pos;
+        }
+        row.clear();
+    }
+    return true;
+}
+
 /// HashMap
 // 128. Longest Consecutive Sequence
 //
@@ -904,6 +1019,8 @@ std::vector<std::vector<int>> LevelOrder(TreeNode* root) {
     return output;
 }
 
+
+
 /// Binary search tree
 /// Graph General
 /// Graph BFS
@@ -1026,7 +1143,6 @@ public:
     TrieNode* root;
 
     WordDictionary() {
-
     }
 
     void addWord(std::string word) {
@@ -1042,18 +1158,31 @@ public:
         tmp->_isLeaf = true;
     }
 
-    bool search(std::string word) {
-        auto tmp = root;
-        for (auto& elem: word) {
-            if (elem == '.' || tmp->_sonMap.find(elem) != tmp->_sonMap.end()) {
-                tmp = tmp->_sonMap[elem];
+    bool searchHelper(std::string word, TrieNode* inNode) {
+        for (int i = 0; i <  word.size(); ++i) {
+            auto elem = word[i];
+            if (inNode->_sonMap.find(elem) != inNode->_sonMap.end()) {
+                inNode = inNode->_sonMap[elem];
             } else {
+                if (elem == '.') {
+                    vector<char> keys;
+                    for(auto & itr : inNode->_sonMap)
+                        keys.push_back(itr.first);
+
+                    for (auto val: keys)
+                        if (searchHelper(val + word.substr(i + 1, word.size()), inNode))
+                            return true;
+                }
                 return false;
             }
         }
-        return tmp->_isLeaf;
+        return inNode->_isLeaf;
     }
 
+    bool search(std::string word) {
+        root = new TrieNode();
+        return searchHelper(word, root);
+    }
 
 };
 /// Backtracking
@@ -1178,7 +1307,7 @@ int maxSubArrayOptimized(std::vector<int>& nums) {
 //Input: nums = [-3,-2,-3]
 //Output: -2
 //Explanation: Subarray [-2] has maximum sum -2.
-
+// [1, 2, 3, 4, 5]
 int maxSubarraySumCircular(std::vector<int>& A) {
     int n = A.size();
     if (n == 1) return A[0];
@@ -1973,5 +2102,16 @@ void testing123() {
     std::string s1 = "aaaa";
     std::string s2 = "dog cat cat dog";
     wordPattern(s1, s2);
+
+    WordDictionary wordDictionary;
+    wordDictionary.addWord("bad");
+    wordDictionary.addWord("dad");
+    wordDictionary.addWord("mad");
+    auto k1 = wordDictionary.search("pad"); // return False
+    auto k2 = wordDictionary.search("bad"); // return True
+    auto k3 = wordDictionary.search(".ad"); // return True
+    auto k4 = wordDictionary.search("b.."); // return True
+    int kkk = 0;
+
 }
 

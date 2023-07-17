@@ -401,7 +401,7 @@ std::vector<int> lc739(std::vector<int> temp) {
     std::stack<int> s;
     std::vector<int> output(temp.size(), 0);
     for (int i = 0; i < temp.size(); ++i) {
-        while (!s.empty() || temp[i] > temp[s.top()]) {
+        while ((!s.empty()) || temp[i] > temp[s.top()]) {
             auto tmp = s.top();
             output[tmp] = i - tmp;
             s.pop();

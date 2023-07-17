@@ -92,6 +92,7 @@ public:
             }
         }
     }
+
     void addAtHead(int val) {
         if (_head == nullptr) {
             _head = new LinkedNode();
