@@ -1143,6 +1143,7 @@ public:
     TrieNode* root;
 
     WordDictionary() {
+        root = new TrieNode();
     }
 
     void addWord(std::string word) {
@@ -1180,7 +1181,7 @@ public:
     }
 
     bool search(std::string word) {
-        root = new TrieNode();
+        WordDictionary();
         return searchHelper(word, root);
     }
 
@@ -1228,6 +1229,107 @@ public:
 };
 
 /// Divide & Conquer
+// 148. Sort List
+//
+//Given the head of a linked list, return the list after sorting it in ascending order.
+//
+//
+//
+//Example 1:
+//
+//Input: head = [4,2,1,3]
+//Output: [1,2,3,4]
+//
+//Example 2:
+//
+//Input: head = [-1,5,3,4,0]
+//Output: [-1,0,3,4,5]
+//
+//Example 3:
+//
+//Input: head = []
+//Output: []
+
+ListNode* at(ListNode* head, int index) {
+    auto tmp = head;
+    while (index != 0) {
+        tmp = tmp->next;
+        --index;
+    }
+    return tmp;
+}
+
+void myMerge(ListNode* head, int left, int mid, int right) {
+    ListNode* dummyTmpHead = new ListNode();
+    auto tmp = dummyTmpHead;
+    int i = 0, j = mid + 1;
+    int k = 0;
+    while (i <= mid && j <= right) {
+        int val1 = at(head, i)->val;
+        int val2 = at(head, j)->val;
+        if (val1 <= val2) {
+            tmp->val = val1;
+            ++i;
+        } else {
+            tmp->val = val2;
+            ++j;
+        }
+        tmp->next = new ListNode();
+        tmp = tmp->next;
+        ++k;
+    }
+
+    while (i <= mid) {
+        int val1 = at(head, i)->val;
+        tmp->val = val1;
+        tmp->next = new ListNode();
+        tmp = tmp->next;
+        ++i;
+        ++k;
+    }
+
+    while (j <= right) {
+        int val2 = at(head, j)->val;
+        tmp->val = val2;
+        tmp->next = new ListNode();
+        tmp = tmp->next;
+        ++j;
+        ++k;
+    }
+
+    tmp = dummyTmpHead;
+    auto tmpHead = head;
+    for (int w = 0; w < k; ++w) {
+        tmpHead->val = tmp->val;
+        tmpHead = tmpHead->next;
+        tmp = tmp->next;
+    }
+}
+
+//Input: head = [4,2,1,3]
+
+void mySort(ListNode* head, int left, int right) {
+    if (left < right) {
+        int mid = (left + right) / 2;
+        mySort(head, left, mid);
+        mySort(head, mid + 1, right);
+        myMerge(head, left, mid, right);
+    }
+}
+
+
+ListNode* sortList(ListNode* head) {
+    if (head == nullptr) return nullptr;
+    int left = 0, right = 0;
+    auto tmp = head;
+    while (tmp != nullptr) {
+        ++right;
+        tmp = tmp->next;
+    }
+    mySort(head, left, right);
+}
+
+
 /// Kadane's Algorithm
 
 // 53. Maximum Subarray
@@ -1494,7 +1596,7 @@ int findPeakElement(vector<int>& nums) {
     while (left <= right) {
         int mid = left + (right - left) / 2;
         if (mid == 0) {
-            if (1 < nums.size() && nums[mid] > nums[mid + 1]) {
+            if (2 <= nums.size() && nums[mid] > nums[mid + 1]) {
                 return mid;
             }
         }
@@ -1546,6 +1648,183 @@ int findPeakElement(vector<int>& nums) {
 //Output: -1
 //
 int search(vector<int>& nums, int target) {
+    if (nums.size() == 1) return nums[0] == target;
+    int l = 0;
+    int r = nums.size() - 1;
+    int m;
+    while (l <= r) {
+        m = (l + r) / 2;
+        if (nums[m] == target) {
+            return m;
+        }
+
+        if (nums[l] == target) {
+            return m;
+        }
+
+        if (nums[r] == target) {
+            return m;
+        }
+
+        if (nums[m] > nums[l]) {
+            if (nums[m] > target && target > nums[l]) {
+                r = m - 1;
+            } else {
+                l = m + 1;
+            }
+        } else {
+            if (nums[m] < target && target < nums[r]) {
+                l = m + 1;
+            } else {
+                r = m - 1;
+            }
+        }
+    }
+    return -1;
+}
+
+// 34. Find First and Last Position of Element in Sorted Array
+//
+//Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
+//
+//If target is not found in the array, return [-1, -1].
+//
+//You must write an algorithm with O(log n) runtime complexity.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [5,7,7,8,8,10], target = 8
+//Output: [3,4]
+//
+//Example 2:
+//
+//Input: nums = [5,7,7,8,8,10], target = 6
+//Output: [-1,-1]
+//
+//Example 3:
+//
+//Input: nums = [], target = 0
+//Output: [-1,-1]
+//
+//Input: nums = [5,7,8,8,8,10], target = 8
+//Output: [2,4]
+
+int search(std::vector<int>& nums, int target, bool isLeft) {
+    int l = 0, r = nums.size() - 1;
+    while (l <= r) {
+        int m = (l + r) / 2;
+        if (nums[m] == target) {
+            if (isLeft) {
+                if (m != 0 && nums[m - 1] == target) {
+                    r = m - 1;
+                } else {
+                    return m;
+                }
+            } else {
+                if (m != nums.size() - 1 && nums[m + 1] == target) {
+                    l = m + 1;
+                } else {
+                    return m;
+                }
+            }
+        } else if (nums[m] < target) {
+            l = m + 1;
+        } else {
+            r = m - 1;
+        }
+    }
+    return -1;
+}
+
+std::vector<int> searchRange(std::vector<int>& nums, int target) {
+    std::vector<int> output = {-1, -1};
+    if (nums.empty()) return output;
+    int l = search(nums, target, true);
+    int r = search(nums, target, false);
+    output[0] = l;
+    output[1] = r;
+    if (l == -1 && r != -1) {
+        output[0] = r;
+        output[1] = -1;
+    }
+    return output;
+}
+
+// 153. Find Minimum in Rotated Sorted Array
+//Suppose an array of length n sorted in ascending order is rotated between 1 and n times. For example, the array nums = [0,1,2,4,5,6,7] might become:
+//
+//    [4,5,6,7,0,1,2] if it was rotated 4 times.
+//    [0,1,2,4,5,6,7] if it was rotated 7 times.
+//
+//Notice that rotating an array [a[0], a[1], a[2], ..., a[n-1]] 1 time results in the array [a[n-1], a[0], a[1], a[2], ..., a[n-2]].
+//
+//Given the sorted rotated array nums of unique elements, return the minimum element of this array.
+//
+//You must write an algorithm that runs in O(log n) time.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [3,4,5,1,2]
+//Output: 1
+//Explanation: The original array was [1,2,3,4,5] rotated 3 times.
+//
+//Example 2:
+//
+//Input: nums = [4,5,6,7,0,1,2]
+//Output: 0
+//Explanation: The original array was [0,1,2,4,5,6,7] and it was rotated 4 times.
+//
+//Example 3:
+//
+//Input: nums = [11,13,15,17]
+//Output: 11
+//Explanation: The original array was [11,13,15,17] and it was rotated 4 times.
+//
+
+/// ???????????????????
+int findMin(std::vector<int>& nums) {
+    int l = 0, r = nums.size() - 1;
+    int mid;
+    while (l <= r) {
+        mid = (l + r) / 2;
+        if (mid != 0 && mid != nums.size() - 1 && nums[mid] < nums[mid + 1] && nums[mid] < nums[mid - 1]) {
+            return mid;
+        }
+
+        if (nums[mid] > nums[r]) {
+            l = mid + 1;
+        } else {
+            r = mid - 1;
+        }
+    }
+    return -1;
+}
+
+// 4. Median of Two Sorted Arrays
+//
+//Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
+//
+//The overall run time complexity should be O(log (m+n)).
+//
+//
+//
+//Example 1:
+//
+//Input: nums1 = [1,3], nums2 = [2]
+//Output: 2.00000
+//Explanation: merged array = [1,2,3] and median is 2.
+//
+//Example 2:
+//
+//Input: nums1 = [1,2], nums2 = [3,4]
+//Output: 2.50000
+//Explanation: merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.
+
+double findMedianSortedArrays(std::vector<int>& nums1, std::vector<int>& nums2) {
 
 }
 
@@ -1765,31 +2044,6 @@ public:
     }
 };
 
-//vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
-//    std::map<std::pair<int, int>, int> mp;
-//    std::vector<std::vector<int>> output;
-//    for (auto elem1: nums1) {
-//        for (auto elem2: nums2) {
-//            mp[std::make_pair(elem1, elem2)] =  elem1 + elem2;
-//        }
-//    }
-//
-//    // priority_queue<Type,Container,Functional> name;
-//    priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, mycomparison> pq;
-//    for (auto itr = mp.begin(); itr != mp.end(); ++itr) {
-//        pq.push(std::make_tuple(itr->first.first, itr->first.second,itr->second));
-//    }
-//
-//    while (k != 0 && !pq.empty()) {
-//        auto tmp = pq.top();
-//        std::vector<int> path = {std::get<0>(tmp), std::get<1>(tmp)};
-//        output.push_back(path);
-//        pq.pop();
-//        --k;
-//    }
-//    return output;
-//}
-
 vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
     auto comp = [](vector<int> &p1, vector<int> &p2) {
         return p1[0] + p1[1] < p2[0] + p2[1];
@@ -1810,6 +2064,37 @@ vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k
 }
 
 /// Bit Manipulation
+// 201. Bitwise AND of Numbers Range
+//
+//Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.
+//
+//Example 1:
+//
+//Input: left = 5, right = 7
+//Output: 4
+//
+//Example 2:
+//
+//Input: left = 0, right = 0
+//Output: 0
+//
+//Example 3:
+//
+//Input: left = 1, right = 2147483647
+//Output: 0
+
+int rangeBitwiseAnd(int left, int right) {
+    if (left == right) return left;
+    if (left == 0 || right == 0) return 0;
+    int shift = 0;
+    while (left < right) {
+        left >>= 1;
+        right >>= 1;
+        ++shift;
+    }
+    return left << shift;
+}
+
 /// Math
 // 172. Factorial Trailing Zeroes
 // Given an integer n, return the number of trailing zeroes in n!.
@@ -1860,6 +2145,41 @@ int math172Optimized(int n) {
         k *= 5;
     }
     return count;
+}
+
+//  149. Max Points on a Line
+//
+//Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane, return the maximum number of points that lie on the same straight line.
+//
+//Example 1:
+//
+//Input: points = [[1,1],[2,2],[3,3]]
+//Output: 3
+//
+//Example 2:
+//
+//Input: points = [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+//Output: 4
+int maxPoints(vector<vector<int>>& points) {
+    auto n = points.size();
+    if (n == 0) return 0;
+    if (n == 1) return 1;
+    if (n == 2) return 2;
+
+    int max = 0;
+    for (int i = 0; i < n; ++i) {
+        std::map<double, int> mp;
+        for (int j = 0; j < n; ++j) {
+            if (i == j) continue;
+            auto angle = std::atan2(points[j][1] - points[i][1], points[j][0] - points[i][0]);
+            mp[angle]++;
+        }
+
+        for (auto elem: mp) {
+            max = std::max(elem.second, max);
+        }
+    }
+    return max;
 }
 
 /// 1D DP
@@ -2113,5 +2433,8 @@ void testing123() {
     auto k4 = wordDictionary.search("b.."); // return True
     int kkk = 0;
 
+    std::vector<int> scs = {8,8,8,8,8,8};
+    auto px = searchRange(scs, 8);
+    int jkjj = 0;
 }
 

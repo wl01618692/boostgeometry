@@ -33,11 +33,13 @@ int find(int x)
 inline void merge(int i, int j)
 {
     int x = find(i), y = find(j);
+    if (x == y) return;
+
     if (rank[x] <= rank[y])
         fa[x] = y;
     else
         fa[y] = x;
-    if (rank[x] == rank[y] && x != y)
+    if (rank[x] == rank[y])
         rank[y]++;
 }
 

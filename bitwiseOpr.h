@@ -4,6 +4,9 @@
 
 #ifndef BOOSTGEOMETRY_BITWISEOPR_H
 #define BOOSTGEOMETRY_BITWISEOPR_H
+
+#include <set>
+#include <algorithm>
 #include "Util.h"
 // leetcode 268
 // 二、leetcode No268. Missing Number
@@ -39,6 +42,97 @@ int leetcod136(std::vector<int> nums) {
     return output;
 }
 
+
+// 137. Single Number II
+//
+//Given an integer array nums where every element appears three times except for one, which appears exactly once. Find the single element and return it.
+//
+//You must implement a solution with a linear runtime complexity and use only constant extra space.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [2,2,3,2]
+//Output: 3
+//
+//Example 2:
+//
+//Input: nums = [0,1,0,1,0,1,99]
+//Output: 99
+//
+//
+//
+//Constraints:
+//
+//    1 <= nums.length <= 3 * 104
+//    -231 <= nums[i] <= 231 - 1
+//    Each element in nums appears exactly three times except for one element which appears once.
+
+// 1: hashmap
+// 2: sort
+// 3: math
+// 4: bitset
+
+
+int singleNumberHashmap(std::vector<int>& nums) {
+    std::map<int, int> mp;
+    for (auto elem: nums) {
+        mp[elem]++;
+    }
+
+    for (auto elem: mp) {
+        if (elem.second == 1) {
+            return elem.first;
+        }
+    }
+    return -1;
+}
+
+int singleNumberSort(std::vector<int>& nums) {
+    int n = nums.size();
+    std::sort(nums.begin(), nums.end());
+    for (int i = 0; i < n;) {
+        if ((i + 1) > (n - 1) || (i + 2) > (n - 1)) return i;
+        if (nums[i] == nums[i + 1] && nums[i + 1] == nums[i + 2]) {
+            i += 3;
+            continue;
+        } else {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int singleNumberMath(std::vector<int>& nums) {
+    std::set<int> s(nums.begin(), nums.end());
+    int s_sum = 0;
+
+    for (auto elem: s) {
+        s_sum += elem;
+    }
+
+    int sum = 0;
+    for (auto elem: nums) {
+        sum += elem;
+    }
+    return (3 * s_sum - sum) / 2;
+}
+
+
+int singleNumberBit(std::vector<int>& nums) {
+    int output = 0;
+    for (int shift = 0; shift < 32; ++shift) {
+        int bitSum = 0;
+        for (auto elem: nums) {
+            bitSum += ((elem >> shift) & 1);
+        }
+        bitSum %= 3;
+        output |= (bitSum << shift);
+    }
+    return output;
+}
+
 // leetcode No260. Single Number III
 //Question：
 //
@@ -64,7 +158,6 @@ std::vector<int> singleNumber(std::vector<int> &nums) {
             result[1] ^= nums[i];
     }
     return result;
-
 }
 
 

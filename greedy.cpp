@@ -39,6 +39,7 @@ int integerReplacement(int n) {
         if (n == 3) {
             ++ans;
             --n;
+            continue;
         } else if (n == 2147483647) {
             ans = 32;
             break;

@@ -240,7 +240,7 @@ public:
         auto fast = head;
         auto pre = head;
         auto dummy = head;
-        while (fast != nullptr) {
+        while (fast != nullptr || fast->next != nullptr) {
             pre = slow;
             fast = fast->next->next;
             slow = slow->next;
@@ -370,7 +370,6 @@ public:
                 tmp->next = next;
             }
         }
-        int jj = 0;
     }
 
     // swapNodes in pair
@@ -411,10 +410,7 @@ public:
             ++length;
         }
 
-        while (k >= length) {
-            k -= length;
-        }
-
+        k %= length;
         if (k == 0) return head;
 
         LinkedNode* dummyHead = new LinkedNode();

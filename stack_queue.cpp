@@ -471,6 +471,7 @@ std::vector<int> lc496(std::vector<int> vec1, std::vector<int> vec2) {
 //    1 <= nums.length <= 10^4
 //    -10^9 <= nums[i] <= 10^9
 
+// [1,2,1，1,2,1]
 vector<int> nextGreaterElements(vector<int>& nums) {
     std::vector<int> result(2 * nums.size(), 0);
     std::vector<int> nums1(nums.begin(), nums.end());

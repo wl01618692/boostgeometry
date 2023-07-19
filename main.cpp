@@ -394,17 +394,24 @@ int main() {
     maxSlidingWindow(kkk, 3);
     std::cout << isAnagram("anagram", "nagaram");
     std::cout << isHappy(1);
-    std::vector<std::vector<int>> edges;
+    std::vector<std::vector<int>> edges =
 
-    // [16,25],[7,9],[3,24],[10,20],[15,24],[2,8],[19,21],[2,15],[13,20],[5,21],[7,11],[6,23],[7,16],[1,8],[17,20],[4,19],[11,22],[5,11],[1,16],[14,20],[1,4],[22,23],[12,20],[15,18],[12,16]]
+            {{16,25},{7,9},{3,24},{10,20},{15,24},{2,8},{19,21},{2,15},{13,20},{5,21},{7,11},{6,23} ,{7,16},{1,8},{17,20},{4,19},{11,22},{5,11},{1,16},{14,20},{1,4},{22,23},{12,20} ,{15,18} ,{12,16}
+    };
+
+//     [16,25],[7,9],[3,24],[10,20 ,[15,24],[2,8],[19,21],[2,15],[13,20],[5,21],[7,11],[6,23],[7,16],[1,8],[17,20],[4,19],[11,22],[5,11],[1,16],[14,20],[1,4],[22,23],[12,20],[15,18],[12,16]]
     // [1,2], [2,3], [3,4], [1,4], [1,5]
-    std::vector<int> i1 = {1, 2};
-    std::vector<int> i2 = {1, 3};
-    std::vector<int> i3 = {2, 3};
+//    std::vector<int> i1 = {1, 4};
+//    std::vector<int> i2 = {3, 4};
+//    std::vector<int> i3 = {1, 3};
+//    std::vector<int> i4 = {1, 2};
+//    std::vector<int> i5 = {4, 5};
     // [[1,4],[3,4],[1,3],[1,2],[4,5]]
-    edges.push_back(i1);
-    edges.push_back(i2);
-    edges.push_back(i3);
+//    edges.push_back(i1);
+//    edges.push_back(i2);
+//    edges.push_back(i3);
+//    edges.push_back(i4);
+//    edges.push_back(i5);
     findRedundantConnection(edges);
     monotoneIncreasingDigits(41114111);
     backspaceCompare("ab#c", "ad#c");
