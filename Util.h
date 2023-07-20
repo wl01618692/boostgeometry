@@ -12,4 +12,5 @@
 #include <complex>
 #include <iostream>
 #include <vector>
+using namespace std;
 #endif //BOOSTGEOMETRY_UTIL_H

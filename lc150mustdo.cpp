@@ -1250,84 +1250,116 @@ public:
 //Input: head = []
 //Output: []
 
-ListNode* at(ListNode* head, int index) {
-    auto tmp = head;
-    while (index != 0) {
-        tmp = tmp->next;
-        --index;
-    }
-    return tmp;
-}
+//ListNode* at(ListNode* head, int index) {
+//    auto tmp = head;
+//    while (index != 0) {
+//        tmp = tmp->next;
+//        --index;
+//    }
+//    return tmp;
+//}
+//
+//void myMerge(ListNode* head, int left, int mid, int right) {
+//    ListNode* dummyTmpHead = new ListNode();
+//    auto tmp = dummyTmpHead;
+//    int i = left, j = mid + 1;
+//    int k = 0;
+//    while (i <= mid && j <= right) {
+//        int val1 = at(head, i)->val;
+//        int val2 = at(head, j)->val;
+//        if (val1 <= val2) {
+//            tmp->val = val1;
+//            ++i;
+//        } else {
+//            tmp->val = val2;
+//            ++j;
+//        }
+//
+//        if (i <= mid || j <= right) {
+//            tmp->next = new ListNode();
+//            tmp = tmp->next;
+//        }
+//        ++k;
+//    }
+//
+//    if (i <= mid) tmp->next = at(head, i);
+//    if (j <= right) tmp->next = at(head, j);
+//
+//    tmp = dummyTmpHead;
+//    auto tmpHead = head;
+//    while (left != 0) {
+//        tmpHead = tmpHead->next;
+//        --left;
+//    }
+//
+//    for (int w = 0; w < k; ++w) {
+//        tmpHead->val = tmp->val;
+//        tmpHead = tmpHead->next;
+//        tmp = tmp->next;
+//    }
+//}
+//
+////Input: head = [4,2,1,3]
+//
+//void mySort(ListNode* head, int left, int right) {
+//    if (left < right) {
+//        int mid = (left + right) / 2;
+//        mySort(head, left, mid);
+//        mySort(head, mid + 1, right);
+//        myMerge(head, left, mid, right);
+//    }
+//}
+//
+//
+//ListNode* sortList(ListNode* head) {
+//    if (head == nullptr) return nullptr;
+//    int left = 0, right = -1;
+//    auto tmp = head;
+//    while (tmp != nullptr) {
+//        tmp = tmp->next;
+//        ++right;
+//    }
+//    mySort(head, left, right);
+//    return head;
 
-void myMerge(ListNode* head, int left, int mid, int right) {
-    ListNode* dummyTmpHead = new ListNode();
-    auto tmp = dummyTmpHead;
-    int i = 0, j = mid + 1;
-    int k = 0;
-    while (i <= mid && j <= right) {
-        int val1 = at(head, i)->val;
-        int val2 = at(head, j)->val;
-        if (val1 <= val2) {
-            tmp->val = val1;
-            ++i;
+ListNode* merge(ListNode* list1, ListNode* list2) {
+    ListNode* dummyHead = new ListNode();
+    ListNode* ptr = dummyHead;
+    while (list1 && list2) {
+        if (list1->val < list2->val) {
+            ptr->next = list1;
+            list1 = list1->next;
         } else {
-            tmp->val = val2;
-            ++j;
+            ptr->next = list2;
+            list2 = list2->next;
         }
-        tmp->next = new ListNode();
-        tmp = tmp->next;
-        ++k;
+        ptr = ptr->next;
     }
-
-    while (i <= mid) {
-        int val1 = at(head, i)->val;
-        tmp->val = val1;
-        tmp->next = new ListNode();
-        tmp = tmp->next;
-        ++i;
-        ++k;
-    }
-
-    while (j <= right) {
-        int val2 = at(head, j)->val;
-        tmp->val = val2;
-        tmp->next = new ListNode();
-        tmp = tmp->next;
-        ++j;
-        ++k;
-    }
-
-    tmp = dummyTmpHead;
-    auto tmpHead = head;
-    for (int w = 0; w < k; ++w) {
-        tmpHead->val = tmp->val;
-        tmpHead = tmpHead->next;
-        tmp = tmp->next;
-    }
+    if(list1) ptr->next = list1;
+    else ptr->next = list2;
+    return dummyHead->next;
 }
 
-//Input: head = [4,2,1,3]
-
-void mySort(ListNode* head, int left, int right) {
-    if (left < right) {
-        int mid = (left + right) / 2;
-        mySort(head, left, mid);
-        mySort(head, mid + 1, right);
-        myMerge(head, left, mid, right);
+ListNode* getMid(ListNode* head) {
+    ListNode* midPrev = nullptr;
+    while (head && head->next) {
+        midPrev = (midPrev == nullptr) ? head : midPrev->next;
+        head = head->next->next;
     }
+    ListNode* mid = midPrev->next;
+    midPrev->next = nullptr;
+    return mid;
 }
-
 
 ListNode* sortList(ListNode* head) {
-    if (head == nullptr) return nullptr;
-    int left = 0, right = 0;
-    auto tmp = head;
-    while (tmp != nullptr) {
-        ++right;
-        tmp = tmp->next;
-    }
-    mySort(head, left, right);
+    if (!head || !head->next)
+        return head;
+    ListNode* mid = getMid(head);
+    ListNode* left = sortList(head);
+    ListNode* right = sortList(mid);
+    return merge(left, right);
 }
+
 
 
 /// Kadane's Algorithm
@@ -1554,8 +1586,8 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
     if (m == 0 && n == 0) return false;
     int left = 0, right = n * m - 1;
     while (left <= right) {
-        auto mid = left + (right - left) / 2;
-        auto val = matrix[mid / n][mid % n];
+        int mid = (left + right) / 2;
+        auto val = matrix[mid / m][mid % m];
         if (target == val) {
             return true;
         } else if (target < val) {
@@ -1592,17 +1624,18 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
 //
 
 int findPeakElement(vector<int>& nums) {
-    int left = 0, right = nums.size() - 1;
+    int n = nums.size();
+    int left = 0, right = n - 1;
     while (left <= right) {
         int mid = left + (right - left) / 2;
         if (mid == 0) {
-            if (2 <= nums.size() && nums[mid] > nums[mid + 1]) {
+            if (n >= 2 && nums[mid] > nums[mid + 1]) {
                 return mid;
             }
         }
 
-        if (mid == nums.size() - 1) {
-            if (nums.size() >= 2 && nums[mid] > nums[mid - 1]) {
+        if (mid == n - 1) {
+            if (n >= 2 && nums[mid] > nums[mid - 1]) {
                 return mid;
             }
         }
@@ -1659,11 +1692,11 @@ int search(vector<int>& nums, int target) {
         }
 
         if (nums[l] == target) {
-            return m;
+            return l;
         }
 
         if (nums[r] == target) {
-            return m;
+            return r;
         }
 
         if (nums[m] > nums[l]) {
@@ -1716,6 +1749,7 @@ int search(std::vector<int>& nums, int target, bool isLeft) {
     while (l <= r) {
         int m = (l + r) / 2;
         if (nums[m] == target) {
+
             if (isLeft) {
                 if (m != 0 && nums[m - 1] == target) {
                     r = m - 1;
@@ -1729,6 +1763,7 @@ int search(std::vector<int>& nums, int target, bool isLeft) {
                     return m;
                 }
             }
+
         } else if (nums[m] < target) {
             l = m + 1;
         } else {
@@ -1785,23 +1820,21 @@ std::vector<int> searchRange(std::vector<int>& nums, int target) {
 //Explanation: The original array was [11,13,15,17] and it was rotated 4 times.
 //
 
-/// ???????????????????
 int findMin(std::vector<int>& nums) {
-    int l = 0, r = nums.size() - 1;
-    int mid;
-    while (l <= r) {
-        mid = (l + r) / 2;
-        if (mid != 0 && mid != nums.size() - 1 && nums[mid] < nums[mid + 1] && nums[mid] < nums[mid - 1]) {
-            return mid;
+    int left = 0, right = nums.size() - 1;
+    while (left <= right) {
+        int mid = (right + left) / 2;
+        if (nums[mid] < nums[right]) {
+            right = mid;
         }
-
-        if (nums[mid] > nums[r]) {
-            l = mid + 1;
-        } else {
-            r = mid - 1;
+        else if (nums[mid] > nums[right]) {
+            left = mid + 1;
+        }
+        else {
+            break;
         }
     }
-    return -1;
+    return nums[left];
 }
 
 // 4. Median of Two Sorted Arrays
@@ -1824,9 +1857,44 @@ int findMin(std::vector<int>& nums) {
 //Output: 2.50000
 //Explanation: merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.
 
-double findMedianSortedArrays(std::vector<int>& nums1, std::vector<int>& nums2) {
+// mergeSort
+// time: O(n + m)
+// space: O(1)
+class Solution4 {
+public:
+    int p1 = 0, p2 = 0;
 
-}
+    // Get the smaller value between nums1[p1] and nums2[p2] and move the pointer forward.
+
+    int getMin(vector<int>& nums1, vector<int>& nums2) {
+        if (p1 < nums1.size() && p2 < nums2.size()) {
+            return nums1[p1] < nums2[p2] ? nums1[p1++] : nums2[p2++];
+        } else if (p1 < nums1.size()) {
+            return nums1[p1++];
+        } else if (p2 < nums2.size()) {
+            return nums2[p2++];
+        }
+        return -1;
+    }
+
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int m = int(nums1.size()), n = int(nums2.size());
+
+        if ((m + n) % 2 == 0) {
+            for (int i = 0; i < (m + n) / 2 - 1; ++i) {
+                int _ = getMin(nums1, nums2);
+            }
+            return (double)(getMin(nums1, nums2) + getMin(nums1, nums2)) / 2;
+        } else {
+            for (int i = 0; i < (m + n) / 2; ++i) {
+                int _ = getMin(nums1, nums2);
+            }
+            return getMin(nums1, nums2);
+        }
+
+        return -1;
+    }
+};
 
 /// Heap
 
@@ -1942,7 +2010,7 @@ public:
 
 private:
     priority_queue<int> left;
-    priority_queue<int,vector<int>,less<>> right;
+    priority_queue<int, vector<int>, less<>> right;
 };
 
 // 502. IPO
@@ -2436,5 +2504,21 @@ void testing123() {
     std::vector<int> scs = {8,8,8,8,8,8};
     auto px = searchRange(scs, 8);
     int jkjj = 0;
+
+    ListNode* h1 = new ListNode();
+    h1->val = 4;
+    ListNode* h2 = new ListNode();
+    h2->val = 1;
+    ListNode* h3 = new ListNode();
+    h3->val = 3;
+    ListNode* h4 = new ListNode();
+    h4->val = 2;
+
+    h1->next = h2;
+    h2->next = h3;
+    h3->next = h4;
+
+    sortList(h1);
+    int kkks = 0;
 }
 

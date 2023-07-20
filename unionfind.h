@@ -9,13 +9,13 @@
 // https://blog.csdn.net/LWR_Shadow/article/details/124873281
 // https://zhuanlan.zhihu.com/p/93647900/
 #define MAXN 1000
-int fa[MAXN], rank[MAXN];
+int fa[MAXN], r_rank[MAXN];
 inline void init(int n)
 {
     for (int i = 1; i <= n; ++i)
     {
         fa[i] = i;
-        rank[i] = 1;
+         r_rank[i] = 1;
     }
 }
 
@@ -35,12 +35,12 @@ inline void merge(int i, int j)
     int x = find(i), y = find(j);
     if (x == y) return;
 
-    if (rank[x] <= rank[y])
+    if ( r_rank[x] <=  r_rank[y])
         fa[x] = y;
     else
         fa[y] = x;
-    if (rank[x] == rank[y])
-        rank[y]++;
+    if ( r_rank[x] ==  r_rank[y])
+         r_rank[y]++;
 }
 
 bool same(int i, int j) {
