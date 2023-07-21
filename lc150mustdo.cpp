@@ -269,6 +269,39 @@ int strStr(std::string haystack, std::string needle) {
 }
 
 /// Two pointers
+//392. Is Subsequence
+//
+//Given two strings s and t, return true if s is a subsequence of t, or false otherwise.
+//
+//A subsequence of a string is a new string that is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters.
+// (i.e., "ace" is a subsequence of "abcde" while "aec" is not).
+//
+//
+//
+//Example 1:
+//
+//Input: s = "abc", t = "ahbgdc"
+//Output: true
+//
+//Example 2:
+//
+//Input: s = "axc", t = "ahbgdc"
+//Output: false
+
+bool isSubsequence(string s, string t) {
+    if (s.empty()) return true;
+    if (t.empty()) return false;
+
+    int l = 0, r = 0;
+    while (l < s.size() && r < t.size()) {
+        if (t[r] == s[l]) {
+            ++l;
+        }
+        ++r;
+    }
+    return l == s.size();
+}
+
 /// Sliding window
 /// Matrix
 // 36. Valid Sudoku
@@ -816,13 +849,16 @@ struct ListNode {
     double val;
 };
 
-/// ???
 ListNode* deleteDuplicates(ListNode* head) {
     if (head == nullptr) return nullptr;
     if (head->next == nullptr) return head;
 
+    auto dummyHead = new ListNode();
+    dummyHead->next = head;
     auto slow = head;
     auto fast = head->next;
+    auto prev = dummyHead;
+
     while (slow->val == fast->val) {
         fast = fast->next;
         if (fast == nullptr) return nullptr;
@@ -833,13 +869,31 @@ ListNode* deleteDuplicates(ListNode* head) {
                 delete tmp;
             }
             fast = fast->next;
+            prev->next = slow;
         }
     }
 
-    while (slow->val != fast->val) {
-        slow = slow->next;
-        fast = fast->next;
+    while (fast != nullptr) {
+        while (slow->val != fast->val) {
+            slow = slow->next;
+            fast = fast->next;
+            prev = prev->next;
+        }
+        while (slow->val == fast->val) {
+            fast = fast->next;
+            if (fast == nullptr || fast->val != slow->val) {
+                while (slow != fast) {
+                    auto tmp = slow;
+                    slow = slow->next;
+                    delete tmp;
+                }
+                if (fast != nullptr) fast = fast->next;
+                prev->next = slow;
+                if (slow == nullptr) break;
+            }
+        }
     }
+    return dummyHead->next;
 }
 
 // 138. Copy List with Random Pointer
@@ -1186,6 +1240,9 @@ public:
     }
 
 };
+
+
+
 /// Backtracking
 // 22. Generate Parentheses
 //Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
@@ -1389,30 +1446,27 @@ ListNode* sortList(ListNode* head) {
 //Output: 23
 //Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
 
-// dp[i - 1], nums[i]
-// < 0, > 0     nums[i]
-// < 0, < 0,    nums[i]
-// > 0, > 0,    dp[i - 1] + nums[i]
-// > 0, < 0,    dp[i - 1] + nums[i]
 int maxSubArray(std::vector<int>& nums) {
-    if (nums.empty()) return 0;
-    std::vector<int> dp(nums.size(), 0);
+    int n = nums.size();
+    if (n == 1) return nums[0];
+    std::vector<int> dp(n, 0);
     dp[0] = nums[0];
-    for (int i = 1; i < nums.size(); ++i) {
+    for (int i = 1; i < n; ++i) {
         dp[i] = std::max(dp[i - 1], 0) + nums[i];
     }
     return *std::max(dp.begin(), dp.end());
 }
 
 int maxSubArrayOptimized(std::vector<int>& nums) {
-    if (nums.empty()) return 0;
-    int dp0, dp1;
-    int dp2 = INT32_MIN;
-    dp0 = nums[0];
-    for (int i = 1; i < nums.size(); ++i) {
+    int n = nums.size();
+    if (n == 1) return nums[0];
+    int dp0 = nums[0];
+    int dp2 = nums[0];
+    int dp1 = 0;
+    for (int i = 1; i < n; ++i) {
         dp1 = std::max(dp0, 0) + nums[i];
         dp0 = dp1;
-        dp2 = std::max(dp1, dp2);
+        dp2 = std::max(dp2, dp1);
     }
     return dp2;
 }
@@ -1442,31 +1496,37 @@ int maxSubArrayOptimized(std::vector<int>& nums) {
 //Output: -2
 //Explanation: Subarray [-2] has maximum sum -2.
 // [1, 2, 3, 4, 5]
-int maxSubarraySumCircular(std::vector<int>& A) {
-    int n = A.size();
-    if (n == 1) return A[0];
 
-    int dp0, dp1;
-    int dp2 = INT32_MIN;
-    dp0 = A[0];
-    for (int i = 1; i < n; ++i) {
-        dp1 = std::max(dp0, 0) + A[i];
-        dp0 = dp1;
-        dp2 = std::max(dp1, dp2);
+// [1,-2,3,-2]
+int maxSubarraySumCircular(std::vector<int>& nums) {
+    int n = nums.size();
+    if (n == 1) return nums[0];
+    int ans1;
+    {
+        int dp0 = nums[0];
+        int dp2 = nums[0];
+        int dp1 = 0;
+        for (int i = 1; i < n; ++i) {
+            dp1 = std::max(dp0, 0) + nums[i];
+            dp0 = dp1;
+            dp2 = std::max(dp2, dp1);
+        }
+        ans1 = dp2;
     }
-    int ans1 = dp2;
     if (n == 2) return ans1;
 
-    int dp00, dp01;
-    int dp02 = INT32_MAX;
-    dp00 = A[1];
-    for (int i = 1; i < n - 1; ++i) {
-        dp01 = std::min(dp00, 0) + A[i];
-        dp00 = dp01;
-        dp02 = std::min(dp01, dp02);
+    int ans2;
+    {
+        int dp0 = 0;
+        int dp2 = 0;
+        int dp1 = 0;
+        for (int i = 1; i < n - 1; ++i) {
+            dp1 = std::min(dp0, 0) + nums[i];
+            dp0 = dp1;
+            dp2 = std::min(dp2, dp1);
+        }
+        ans2 = std::accumulate(nums.begin(), nums.end(), 0) - dp2;
     }
-
-    int ans2 = std::accumulate(A.begin(), A.end(), 0) - dp02;
     return std::max(ans1, ans2);
 }
 
@@ -1625,9 +1685,13 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
 
 int findPeakElement(vector<int>& nums) {
     int n = nums.size();
-    int left = 0, right = n - 1;
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
+    if (nums.empty()) return -1;
+    if (n == 1) return 0;
+    if (n == 2) return (nums[0] > nums[1]) ? 0 : 1;
+
+    int l = 0, r = n - 1;
+    while (l <= r) {
+        int mid = (l + r) / 2;
         if (mid == 0) {
             if (n >= 2 && nums[mid] > nums[mid + 1]) {
                 return mid;
@@ -1640,12 +1704,12 @@ int findPeakElement(vector<int>& nums) {
             }
         }
 
-        if (nums[mid] > nums[mid - 1] && nums[mid] > nums[mid + 1]) {
+        if (nums[mid] > nums[mid + 1] && nums[mid] > nums[mid - 1]) {
             return mid;
-        } else if (nums[mid] < nums[mid - 1] && nums[mid] > nums[mid + 1]) {
-            right = mid - 1;
+        } else if (nums[mid] < nums[mid + 1]) {
+            l = mid + 1;
         } else {
-            left = mid + 1;
+            r = mid - 1;
         }
     }
     return -1;
@@ -1838,6 +1902,7 @@ int findMin(std::vector<int>& nums) {
 }
 
 // 4. Median of Two Sorted Arrays
+/// ???????????????????????
 //
 //Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
 //
@@ -1987,25 +2052,17 @@ public:
     }
 
     void addNum(int num) {
-        if (left.empty() || num <= left.top()) left.push(num);
-        else right.push(num);
-
-        while (left.size() > right.size()) {
-            auto tmp = left.top();
-            left.pop();
-            right.push(tmp);
-        }
-
-        while (right.size() - 1 > left.size()) {
-            auto tmp = right.top();
+        left.push(num);
+        right.push(left.top());
+        left.pop();
+        if (left.size() < right.size()) {
+            left.push(right.top());
             right.pop();
-            left.push(tmp);
         }
     }
 
     double findMedian() {
-        if (left.size() != right.size()) return left.top();
-        return (left.top() + right.top()) / 2.0;
+        return (left.size() != right.size()) ? left.top() : (left.top() + right.top()) / 2.0;
     }
 
 private:
@@ -2104,13 +2161,6 @@ public:
 //Input: nums1 = [1,2], nums2 = [3], k = 3
 //Output: [[1,3],[2,3]]
 //Explanation: All possible pairs are returned from the sequence: [1,3],[2,3]
-
-class mycomparison {
-public:
-    bool operator()(const tuple<int, int, int>& lhs, const tuple<int, int, int>& rhs) {
-        return std::get<2>(lhs) > std::get<2>(rhs);
-    }
-};
 
 vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
     auto comp = [](vector<int> &p1, vector<int> &p2) {
@@ -2371,11 +2421,10 @@ int robOptimized(std::vector<int>& nums) {
 //  Output: false
 //
 
-// dp[i] = first i characters can be wordbreak
 bool wordBreak(std::string s, std::vector<std::string>& wordDict) {
     std::vector<bool> dp(s.size() + 1, false);
     dp[0] = true;
-    for (int i = 1; i < s.size() + 1; ++i) {
+    for (int i = 1; i <= s.size(); ++i) {
         for (int j = 0; j <= i; ++j) {
             if (dp[j] && std::find(wordDict.begin(), wordDict.end(), s.substr(j, i)) != wordDict.end()) {
                 dp[i] = true;
@@ -2440,6 +2489,62 @@ int minDistance(std::string word1, std::string word2) {
         }
     }
     return dp[word1.size()][word2.size()];
+}
+
+// 97. Interleaving String
+//
+//Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
+//
+//An interleaving of two strings s and t is a configuration where s and t are divided into n and m
+//substrings
+//respectively, such that:
+//
+//    s = s1 + s2 + ... + sn
+//    t = t1 + t2 + ... + tm
+//    |n - m| <= 1
+//    The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...
+//
+//Note: a + b is the concatenation of strings a and b.
+//
+//
+//
+//Example 1:
+//
+//Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"
+//Output: true
+//Explanation: One way to obtain s3 is:
+//Split s1 into s1 = "aa" + "bc" + "c", and s2 into s2 = "dbbc" + "a".
+//Interleaving the two splits, we get "aa" + "dbbc" + "bc" + "a" + "c" = "aadbbcbcac".
+//Since s3 can be obtained by interleaving s1 and s2, we return true.
+//
+//Example 2:
+//
+//Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"
+//Output: false
+//Explanation: Notice how it is impossible to interleave s2 with any other string to obtain s3.
+//
+//Example 3:
+//
+//Input: s1 = "", s2 = "", s3 = ""
+//Output: true
+
+bool isInterLeave(std::string s1, int i, std::string s2, int j, std::string res, std::string s3) {
+    if (res == s3 && i == s1.size() && j == s2.size()) return true;
+    bool ans = false;
+
+    if (i < s1.size()) {
+        ans |= isInterLeave(s1, i + 1, s2, j, res + s1[i], s3);
+    }
+
+    if (j < s2.size()) {
+        ans |= isInterLeave(s1, i, s2, j + 1, res + s2[j], s3);
+    }
+    return ans;
+}
+
+bool isInterLeave(std::string s1, std::string s2, std::string s3) {
+    if ((s1.size() + s2.size()) == s3.size()) return false;
+    return isInterLeave(s1, 0, s2, 0, "", s3);
 }
 
 
@@ -2520,5 +2625,31 @@ void testing123() {
 
     sortList(h1);
     int kkks = 0;
+
+    std::vector<int> nums1 = {1,-2,3,-2}, nums2 = {3, 4, 3, 2, 1};
+    findPeakElement(nums2);
+    maxSubarraySumCircular(nums1);
+
+    ListNode* r1 = new ListNode();
+    ListNode* r2 = new ListNode();
+    ListNode* r3 = new ListNode();
+    ListNode* r4 = new ListNode();
+    ListNode* r5 = new ListNode();
+    ListNode* r6 = new ListNode();
+    ListNode* r7 = new ListNode();
+    r1->val = 1;
+    r2->val = 2;
+    r3->val = 3;
+    r4->val = 3;
+    r5->val = 4;
+    r6->val = 4;
+    r7->val = 4;
+    r1->next = r2;
+    r2->next = r3;
+    r3->next = r4;
+    r4->next = r5;
+    r5->next = r6;
+    r6->next = r7;
+    deleteDuplicates(r1);
 }
 

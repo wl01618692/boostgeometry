@@ -275,37 +275,14 @@ std::vector<int> leetcod260(std::vector<int> nums) {
     std::vector<int> result = {0, 0};
     for (int i = 1; i < nums.size(); i++)
         xor_two ^= nums[i];
-//    last_bit = xor_two & (~(xor_two - 1)); //相异为1，取异或的最后一个1，把两个元素区分，然后分别对两个数组异或
-//    for (int i = 0; i < nums.size(); i++) {
-//        if (nums[i] & last_bit)
-//            result[0] ^= nums[i];
-//        else
-//            result[1] ^= nums[i];
-//    }
-//    return result;
-
-    int pos = 0;
-    while(pos < 32)
-    {
-        if(xor_two & (1<<pos))
-            break;
+    last_bit = xor_two & (~(xor_two - 1)); //相异为1，取异或的最后一个1，把两个元素区分，然后分别对两个数组异或
+    for (int i = 0; i < nums.size(); i++) {
+        if (nums[i] & last_bit)
+            result[0] ^= nums[i];
         else
-            ++pos;
+            result[1] ^= nums[i];
     }
-
-    int x1 = 0;
-    int x2 = 0;
-    for (int i = 0;i < nums.size();++i)
-    {
-        if(nums[i] & (1<<pos))
-            x1 ^= nums[i];
-        else
-            x2 ^= nums[i];
-    }
-
-    result[0] = x1;
-    result[1] = x2;
-
+    return result;
 }
 
 
@@ -359,8 +336,8 @@ int main() {
     std::cout << output20("(]") << std::endl;
     std::cout << output20("()[]{}") << std::endl;
     std::cout << output20("()") << std::endl;
-    std::vector<int> kk = {1,1,1,2,2,3};
-    topKFrequent(kk, 2);
+//    std::vector<int> kk = {1,1,1,2,2,3};
+//    topKFrequent(kk, 2);
     std::vector<int> kkk = {1,3,-1,-3, 5, 3, 6, 7};
     maxSlidingWindow(kkk, 3);
     std::cout << isAnagram("anagram", "nagaram");
