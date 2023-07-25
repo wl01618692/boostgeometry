@@ -296,7 +296,14 @@ int main() {
 //    std::vector<std::vector<char>> input200_3 = {{'1','0','0','0','0'}, {'0','1','0','0','0'}, {'0','0','1','0','0'}, {'0','0','0','1','0'}, {'0','0','0','0','1'}};
 //    int count3 = numIslandsBFS(input200_3);
 
+
+
+    // '0' => 48
+    int tmp = ('8' - '0');
+    int pos = 1 << (tmp - 1);
+
     std::string sb = "abcde";
+    int ssss = rand() % sb.size();
     auto kksd = sb.substr(0, 2);
     std::vector<int> input268 = {1, 2, 1, 3, 2, 5};
     auto kkkk = leetcod260(input268);

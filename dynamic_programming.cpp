@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <stack>
 #include "dynamic_programming.h"
 int fib(int N) {
     if (N <= 1) return N;
@@ -296,6 +297,32 @@ int minDis(const std::string& s1, const std::string& s2) {
 
 /// lc42
 // [0,1,0,2,1,0,1,3,2,1,2,1]
+// brute force
+// time: O(n^2)
+// space: O(1)
+class Solution {
+public:
+    int trap(vector<int>& height)
+    {
+        int ans = 0;
+        int size = height.size();
+        for (int i = 1; i < size - 1; i++) {
+            int left_max = 0, right_max = 0;
+            for (int j = i; j >= 0; j--) { //Search the left part for max bar size
+                left_max = max(left_max, height[j]);
+            }
+            for (int j = i; j < size; j++) { //Search the right part for max bar size
+                right_max = max(right_max, height[j]);
+            }
+            ans += min(left_max, right_max) - height[i];
+        }
+        return ans;
+    }
+};
+
+// 1D-DP
+// time: O(n)
+// space: O(n)
 int trapWater1(std::vector<int> height) {
     int res = 0;
     std::vector<int> lmax(height.size(), 0);
@@ -308,11 +335,54 @@ int trapWater1(std::vector<int> height) {
         rmax[i] = std::max(rmax[i + 1], height[i + 1]);
     }
 
-    for (int i = 1; i < height.size(); ++i) {
+    for (int i = 1; i < height.size() - 1; ++i) {
         auto tmp = std::min(lmax[i], rmax[i]) - height[i];
         if (tmp > 0) res += tmp;
     }
     return res;
+}
+
+// stack
+// time: O(n)
+// space: O(1)
+int trapStack(vector<int>& height)
+{
+    int ans = 0, current = 0;
+    std::stack<int> st;
+    while (current < height.size()) {
+        while (!st.empty() && height[current] > height[st.top()]) {
+            int top = st.top();
+            st.pop();
+            if (st.empty())
+                break;
+            int distance = current - st.top() - 1;
+            int bounded_height = min(height[current], height[st.top()]) - height[top];
+            ans += distance * bounded_height;
+        }
+        st.push(current++);
+    }
+    return ans;
+}
+
+// two pointer
+// time: O(n)
+// space: O(1)
+int trap(vector<int>& height)
+{
+    int left = 0, right = height.size() - 1;
+    int ans = 0;
+    int left_max = 0, right_max = 0;
+    while (left < right) {
+        if (height[left] < height[right]) {
+            height[left] >= left_max ? (left_max = height[left]) : ans += (left_max - height[left]);
+            ++left;
+        }
+        else {
+            height[right] >= right_max ? (right_max = height[right]) : ans += (right_max - height[right]);
+            --right;
+        }
+    }
+    return ans;
 }
 
 /// 64
@@ -520,6 +590,49 @@ int minimumTotalOptimized(std::vector<std::vector<int>>& triangle) {
         minVal = std::min(minVal, elem);
     }
     return minVal;
+}
+
+// 1986. Minimum Number of Work Sessions to Finish the Tasks
+//
+// There are n tasks assigned to you.
+// The task times are represented as an integer array tasks of length n, where the ith task takes tasks[i] hours to finish.
+// A work session is when you work for at most sessionTime consecutive hours and then take a break.
+//
+//You should finish the given tasks in a way that satisfies the following conditions:
+//
+//    If you start a task in a work session, you must complete it in the same work session.
+//    You can start a new task immediately after finishing the previous one.
+//    You may complete the tasks in any order.
+//
+//Given tasks and sessionTime, return the minimum number of work sessions needed to finish all the tasks following the conditions above.
+//
+//The tests are generated such that sessionTime is greater than or equal to the maximum element in tasks[i].
+//
+//
+//
+//Example 1:
+//
+//Input: tasks = [1,2,3], sessionTime = 3
+//Output: 2
+//Explanation: You can finish the tasks in two work sessions.
+//- First work session: finish the first and the second tasks in 1 + 2 = 3 hours.
+//- Second work session: finish the third task in 3 hours.
+//
+//Example 2:
+//
+//Input: tasks = [3,1,3,1,1], sessionTime = 8
+//Output: 2
+//Explanation: You can finish the tasks in two work sessions.
+//- First work session: finish all the tasks except the last one in 3 + 1 + 3 + 1 = 8 hours.
+//- Second work session: finish the last task in 1 hour.
+//
+//Example 3:
+//
+//Input: tasks = [1,2,3,4,5], sessionTime = 15
+//Output: 1
+//Explanation: You can finish all the tasks in one work session.
+int minSessions(vector<int>& tasks, int sessionTime) {
+    
 }
 
 void test_dp() {

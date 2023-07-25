@@ -398,50 +398,36 @@ int lc105(std::vector<int> nums, int k) {
 //
 //    解释: 你不能从 0 号或 1 号加油站出发，因为没有足够的汽油可以让你行驶到下一个加油站。我们从 2 号加油站出发，可以获得 4 升汽油。 此时油箱有 = 0 + 4 = 4 升汽油。开往 0 号加油站，此时油箱有 4 - 3 + 2 = 3 升汽油。开往 1 号加油站，此时油箱有 3 - 3 + 3 = 3 升汽油。你无法返回 2 号加油站，因为返程需要消耗 4 升汽油，但是你的油箱只有 3 升汽油。因此，无论怎样，你都不可能绕环路行驶一周。
 //
-
 int canCompleteCircuit(std::vector<int>& gas, std::vector<int>& cost) {
-    for (int i = 0; i < cost.size(); i++) {
+    int n = gas.size();
+    if (n == 0) return -1;
+    for (int i = 0; i < n; ++i) {
         int rest = gas[i] - cost[i];
-        int index = (i + 1) % cost.size();
-        while (rest > 0 && index != i) { // 模拟以i为起点行驶一圈（如果有rest==0，那么答案就不唯一了）
+        int index = (i + 1) % n;
+        while (index != i && rest > 0) {
             rest += gas[index] - cost[index];
-            index = (index + 1) % cost.size();
+            index = (index + 1) % n;
         }
-        // 如果以i为起点跑一圈，剩余油量>=0，返回该起始位置
-        if (rest >= 0 && index == i) return i;
+        if (index == i && rest >= 0) return i;
     }
     return -1;
 }
 
-int canCompleteCircuit1(std::vector<int>& gas, std::vector<int>& cost) {
-    int curSum = 0;
-    int min = INT32_MAX; // 从起点出发，油箱里的油量最小值
-    for (int i = 0; i < gas.size(); i++) {
-        int rest = gas[i] - cost[i];
-        curSum += rest;
-        if (curSum < min) {
-            min = curSum;
+class Solution {
+public:
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        int currGain = 0, totalGain = 0, answer = 0;
+        for (int i = 0; i < gas.size(); ++i) {
+            totalGain += gas[i] - cost[i];
+            currGain += gas[i] - cost[i];
+            if (currGain < 0) {
+                answer = i + 1;
+                currGain = 0;
+            }
         }
+        return totalGain >= 0 ? answer : -1;
     }
-    // 直接从全局进行贪心选择，情况如下：
-    //
-    //    情况一：如果gas的总和小于cost总和，那么无论从哪里出发，一定是跑不了一圈的
-    //
-    //    情况二：rest[i] = gas[i]-cost[i]为一天剩下的油，i从0开始计算累加到最后一站，如果累加没有出现负数，说明从0出发，油就没有断过，那么0就是起点。
-    //
-    //    情况三：如果累加的最小值是负数，汽车就要从非0节点出发，从后向前，看哪个节点能把这个负数填平，能把这个负数填平的节点就是出发节点。
-    if (curSum < 0) return -1;  // 情况1
-    if (min >= 0) return 0;     // 情况2
-    // 情况3
-    for (int i = gas.size() - 1; i >= 0; i--) {
-        int rest = gas[i] - cost[i];
-        min += rest;
-        if (min >= 0) {
-            return i;
-        }
-    }
-    return -1;
-}
+};
 
 /// 406
 // 假设有打乱顺序的一群人站成一个队列，数组 people 表示队列中一些人的属性（不一定按顺序）。每个 people[i] = [hi, ki] 表示第 i 个人的身高为 hi ，前面 正好 有 ki 个身高大于或等于 hi 的人。
@@ -642,7 +628,6 @@ int findMinArrowShots(std::vector<std::vector<int>>& points) {
     for (int i = 1; i < points.size(); ++i) {
         if (points[i][0] > points[i - 1][1]) {
             ++count;
-            continue;
         } else {
             points[i][1] = std::min(points[i - 1][1], points[i][1]);
         }
@@ -733,4 +718,5 @@ public:
 std::vector<int> partitionLabels(std::string S) {
 
 }
+
 

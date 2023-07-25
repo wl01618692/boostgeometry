@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by zhangjiayuan on 23-5-24.
 //
 #include <stack>
@@ -11,6 +11,7 @@
 #include <numeric>
 
 using namespace std;
+
 /// Array String
 // 55. Jump Game
 //You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
@@ -30,7 +31,7 @@ using namespace std;
 //Explanation: You will always arrive at index 3 no matter what. Its maximum jump length is 0, which makes it impossible to reach the last index.
 //
 // [2,5，0,0]
-bool canJump12(std::vector<int>& nums) {
+bool canJump12(std::vector<int> &nums) {
     if (nums.size() == 1) return true;
     int cover = 0;
     for (int i = 0; i <= cover; ++i) {
@@ -64,7 +65,7 @@ bool canJump12(std::vector<int>& nums) {
 //Output: 2
 
 // [7,0,9,6,9,6,1,7,9,0,1,2,9,0,3]
-int jump2(std::vector<int>& nums) {
+int jump2(std::vector<int> &nums) {
     if (nums.size() == 1) return 0;
     int count = 0;
     int cur = 0;
@@ -110,122 +111,51 @@ int jump2(std::vector<int>& nums) {
 //
 //Follow-up: If the string data type is mutable in your language, can you solve it in-place with O(1) extra space?
 //
-std::string reverseWords(std::string s) {
-    int i = 0, j = s.size() - 1;
-    while (i < j) {
+
+// modify in-place
+// AC
+void reverseString(std::string &s, int i, int j) {
+    while (i <= j) {
         std::swap(s[i++], s[j--]);
     }
+}
 
-    // left strip
+std::string reverseWords(std::string s) {
     int k = 0;
     while (s[k] == ' ') ++k;
     s.erase(s.begin(), s.begin() + k);
 
-    // right strip
     k = 0;
     while (s[s.size() - 1 - k] == ' ') ++k;
     s.erase(s.end() - k, s.end());
 
-    i = 0, j = 0;
-    for (int k = 0; k < s.size() - 1; ++k) {
-        if (s[k] == ' ' && s[k + 1] == ' ')  {
-            ++k;
+    k = -1;
+    for (int i = 0; i < s.size(); ++i) {
+        if (k == -1 && s[i] == ' ' && s[i + 1] == ' ') {
+            k = i;
+        }
+
+        if (k != -1 && s[i + 1] != ' ') {
+            s.erase(s.begin() + k, s.begin() + i);
+            k = -1;
+            i -= (i - k);
         }
     }
 
-    i = 0, j = 0;
-    for (auto elem: s) {
-        if (elem == ' ') {
-            std::reverse(s.begin() + i, s.begin() + i + j);
-            j += 2;
-            i = j;
-            continue;
+    for (int i = 0; i < s.size() / 2; ++i) {
+        std::swap(s[i], s[s.size() - 1 - i]);
+    }
+
+    for (int i = 0, j = 0; i < s.size(); ++i) {
+        if (i == s.size() - 1 || s[i + 1] == ' ') {
+            reverseString(s, j, i);
+            j = i + 2;
+            i++;
         }
-        ++j;
     }
     return s;
 }
 
-// 121. Best Time to Buy and Sell Stock
-//
-//You are given an array prices where prices[i] is the price of a given stock on the ith day.
-//
-//You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
-//
-//Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
-//
-//
-//
-//Example 1:
-//
-//Input: prices = [7,1,5,3,6,4]
-//Output: 5
-//Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.
-//Note that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.
-//
-//Example 2:
-//
-//Input: prices = [7,6,4,3,1]
-//Output: 0
-//Explanation: In this case, no transactions are done and the max profit = 0.
-
-int maxProfit(vector<int>& prices) {
-    int low = INT32_MAX;
-    int result = 0;
-    for (int i = 0; i < prices.size(); i++) {
-        low = min(low, prices[i]);  // 取最左最小价格
-        result = max(result, prices[i] - low); // 直接取最大区间利润
-    }
-    return result;
-}
-
-// 122. Best Time to Buy and Sell Stock II
-//
-//You are given an integer array prices where prices[i] is the price of a given stock on the ith day.
-//
-//On each day, you may decide to buy and/or sell the stock. You can only hold at most one share of the stock at any time. However, you can buy it then immediately sell it on the same day.
-//
-//Find and return the maximum profit you can achieve.
-//
-//
-//
-//Example 1:
-//
-//Input: prices = [7,1,5,3,6,4]
-//Output: 7
-//Explanation: Buy on day 2 (price = 1) and sell on day 3 (price = 5), profit = 5-1 = 4.
-//Then buy on day 4 (price = 3) and sell on day 5 (price = 6), profit = 6-3 = 3.
-//Total profit is 4 + 3 = 7.
-//
-//Example 2:
-//
-//Input: prices = [1,2,3,4,5]
-//Output: 4
-//Explanation: Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.
-//Total profit is 4.
-//
-//Example 3:
-//
-//Input: prices = [7,6,4,3,1]
-//Output: 0
-//Explanation: There is no way to make a positive profit, so we never buy the stock to achieve the maximum profit of 0.
-//
-//
-//
-//Constraints:
-//
-//    1 <= prices.length <= 3 * 104
-//    0 <= prices[i] <= 104
-
-int maxProfit122(vector<int>& prices) {
-    int res = 0;
-    for (int i = 1; i < prices.size(); ++i) {
-        if (prices[i] - prices[i - 1] > 0) {
-            res += prices[i] - prices[i - 1];
-        }
-    }
-    return res;
-}
 
 // 28. Find the Index of the First Occurrence in a String
 //
@@ -268,6 +198,218 @@ int strStr(std::string haystack, std::string needle) {
     return index;
 }
 
+// 274. H-Index
+//
+//Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return the researcher's h-index.
+//
+//According to the definition of h-index on Wikipedia:
+// The h-index is defined as the maximum value of h such that the given researcher has published at least h papers that have each been cited at least h times.
+//
+//
+//
+//Example 1:
+//
+//Input: citations = [3,0,6,1,5]
+//Output: 3
+//Explanation: [3,0,6,1,5] means the researcher has 5 papers in total and each of them had received 3, 0, 6, 1, 5 citations respectively.
+//Since the researcher has 3 papers with at least 3 citations each and the remaining two with no more than 3 citations each, their h-index is 3.
+// 0 1 3 5 6
+//
+//Example 2:
+//
+//Input: citations = [1,3,1]
+//Output: 1
+// 1 1 3
+
+// complexity
+// time: O(NlogN)
+// space: O(1)
+int hIndex(vector<int> &citations) {
+    int left = 0;
+    std::sort(citations.begin(), citations.end());
+    while (left < citations.size() && citations[citations.size() - 1 - left] > left) {
+        ++left;
+    }
+    return left;
+}
+
+// time complexity: O(n)
+// space complexity: O(n)
+int hIndexCountingSort(vector<int> &citations) {
+    int n = citations.size();
+    std::vector<int> counter(n + 1, 0);
+    for (auto elem: citations) {
+        counter[std::min(n, elem)]++;
+    }
+
+    int k = n;
+    for (int s = counter[n]; k > s; s += counter[k]) {
+        --k;
+    }
+    return k;
+}
+
+void countingSort(std::vector<int> array) {
+
+}
+
+// def counting_sort(array):
+//    largest = max(array); smallest = min(array)  # 获取最大，最小值
+//    counter = [0 for i in range(largest-smallest+1)]  # 用于统计个数的空数组
+//    idx = 0  # 桶内索引值
+//    for i in range(len(array)):
+//        counter[array[i]-smallest] += 1  # 统计每个元素出现的次数
+//    for j in range(len(counter)):
+//        while counter[j] > 0:
+//            array[idx] = j + smallest  # 取出元素
+//            idx += 1
+//            counter[j] -= 1
+//    return array
+
+// 238. Product of Array Except Self
+//
+//Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i].
+//
+//The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.
+//
+//You must write an algorithm that runs in O(n) time and without using the division operation.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [1,2,3,4]
+//Output: [24,12,8,6]
+//
+//Example 2:
+//
+//Input: nums = [-1,1,0,-3,3]
+//Output: [0,0,9,0,0]
+//
+//
+//
+//Constraints:
+//
+//    2 <= nums.length <= 105
+//    -30 <= nums[i] <= 30
+//    The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.
+//
+//
+//
+//Follow up: Can you solve the problem in O(1) extra space complexity? (The output array does not count as extra space for space complexity analysis.)
+vector<int> productExceptSelf(vector<int> &nums) {
+    int n = nums.size();
+    if (n == 1) return nums;
+    std::vector<int> left(n, 0);
+    std::vector<int> right(n, 0);
+    std::vector<int> output(n, 0);
+    left[0] = 1;
+    for (int i = 1; i < n; ++i) {
+        left[i] = left[i - 1] * nums[i - 1];
+    }
+
+    right[n - 1] = 1;
+    for (int i = n - 1; i >= 1; --i) {
+        right[i - 1] = right[i] * nums[i];
+    }
+
+    for (int i = 0; i < n; ++i) {
+        output[i] = right[i] * left[i];
+    }
+    return output;
+}
+
+vector<int> productExceptSelfOptimized(vector<int> &nums) {
+    int n = nums.size();
+    if (n == 1) return nums;
+    std::vector<int> output(n, 0);
+    output[0] = 1;
+    for (int i = 1; i < n; ++i) {
+        output[i] = output[i - 1] * nums[i - 1];
+    }
+    int R = 1;
+    for (int i = n - 1; i >= 0; --i) {
+        output[i] *= R;
+        R *= nums[i];
+    }
+    return output;
+}
+
+// 380. Insert Delete GetRandom O(1)
+//
+//Implement the RandomizedSet class:
+//
+//    RandomizedSet() Initializes the RandomizedSet object.
+//    bool insert(int val) Inserts an item val into the set if not present. Returns true if the item was not present, false otherwise.
+//    bool remove(int val) Removes an item val from the set if present. Returns true if the item was present, false otherwise.
+//    int getRandom() Returns a random element from the current set of elements (it's guaranteed that at least one element exists when this method is called). Each element must have the same probability of being returned.
+//
+//You must implement the functions of the class such that each function works in average O(1) time complexity.
+//
+//Example 1:
+//
+//Input
+//["RandomizedSet", "insert", "remove", "insert", "getRandom", "remove", "insert", "getRandom"]
+//[[], [1], [2], [2], [], [1], [2], []]
+//Output
+//[null, true, false, true, 2, true, false, 2]
+//
+//Explanation
+//RandomizedSet randomizedSet = new RandomizedSet();
+//randomizedSet.insert(1); // Inserts 1 to the set. Returns true as 1 was inserted successfully.
+//randomizedSet.remove(2); // Returns false as 2 does not exist in the set.
+//randomizedSet.insert(2); // Inserts 2 to the set, returns true. Set now contains [1,2].
+//randomizedSet.getRandom(); // getRandom() should return either 1 or 2 randomly.
+//randomizedSet.remove(1); // Removes 1 from the set, returns true. Set now contains [2].
+//randomizedSet.insert(2); // 2 was already in the set, so return false.
+//randomizedSet.getRandom(); // Since 2 is the only number in the set, getRandom() will always return 2.
+//
+//
+//
+//Constraints:
+//
+//    -231 <= val <= 231 - 1
+//    At most 2 * 105 calls will be made to insert, remove, and getRandom.
+//    There will be at least one element in the data structure when getRandom is called.
+
+class RandomizedSet {
+public:
+    RandomizedSet() {
+
+    }
+
+    bool insert(int val) {
+        if (mp.find(val) != mp.end()) {
+            return false;
+        }
+        v.push_back(val);
+        mp.insert({val, v.size() - 1});
+        return true;
+    }
+
+    bool remove(int val) {
+        if (mp.find(val) == mp.end()) {
+            return false;
+        }
+        // move the last element to the place idx of the element to delete
+        int lastElement = v[v.size() - 1];
+        int idx = mp[val];
+        v[idx] = lastElement;
+        mp[lastElement] = idx;
+
+        v.erase(v.end() - 1, v.end());
+        mp.erase(val);
+        return true;
+    }
+
+    int getRandom() {
+        return v[rand() % v.size()];
+    }
+
+    std::unordered_map<int, int> mp;
+    std::vector<int> v;
+};
+
 /// Two pointers
 //392. Is Subsequence
 //
@@ -301,6 +443,8 @@ bool isSubsequence(string s, string t) {
     }
     return l == s.size();
 }
+
+
 
 /// Sliding window
 /// Matrix
@@ -346,7 +490,7 @@ bool isSubsequence(string s, string t) {
 //,[".",".",".",".","8",".",".","7","9"]]
 //Output: false
 //Explanation: Same as Example 1, except with the 5 in the top left corner being modified to 8. Since there are two 8's in the top left 3x3 sub-box, it is invalid.
-bool isValidSudoku(vector<vector<char>>& board) {
+bool isValidSudoku(vector<vector<char>> &board) {
     std::vector<int> row(9, 0);
     std::vector<int> col(9, 0);
     std::vector<int> box(9, 0);
@@ -398,10 +542,10 @@ bool isValidSudoku(vector<vector<char>>& board) {
 //Input: nums = [0,3,7,2,5,8,4,6,0,1]
 //Output: 9
 // 1 2 3 4 5 8 10 11 12 13 14 15
-int longestConsecutive(std::vector<int>& nums) {
+int longestConsecutive(std::vector<int> &nums) {
     if (nums.size() == 1) return 1;
     std::set<int> s;
-    for (auto& elem: nums) {
+    for (auto &elem: nums) {
         s.insert(elem);
     }
 
@@ -419,6 +563,7 @@ int longestConsecutive(std::vector<int>& nums) {
     }
     return output;
 }
+
 //
 //    Time complexity : O(n)
 //
@@ -521,7 +666,7 @@ std::string findString(std::string s, int spaceCount) {
 
 bool wordPattern(std::string pattern, std::string s) {
     int countSpace = 1;
-    for (auto& elem: s) {
+    for (auto &elem: s) {
         if (elem == ' ') ++countSpace;
     }
     if (countSpace != pattern.size()) return false;
@@ -544,6 +689,95 @@ bool wordPattern(std::string pattern, std::string s) {
 }
 
 /// Intervals
+// 228. Summary Ranges
+//
+//You are given a sorted unique integer array nums.
+//
+//A range [a,b] is the set of all integers from a to b (inclusive).
+//
+//Return the smallest sorted list of ranges that cover all the numbers in the array exactly.
+// That is, each element of nums is covered by exactly one of the ranges, and there is no integer x such that x is in one of the ranges but not in nums.
+//
+//Each range [a,b] in the list should be output as:
+//
+//    "a->b" if a != b
+//    "a" if a == b
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [0,1,2,4,5,7]
+//Output: ["0->2","4->5","7"]
+//Explanation: The ranges are:
+//[0,2] --> "0->2"
+//[4,5] --> "4->5"
+//[7,7] --> "7"
+//
+//Example 2:
+//
+//Input: nums = [0,2,3,4,6,8,9]
+//Output: ["0","2->4","6","8->9"]
+//Explanation: The ranges are:
+//[0,0] --> "0"
+//[2,4] --> "2->4"
+//[6,6] --> "6"
+//[8,9] --> "8->9"
+//
+//
+//
+//Constraints:
+//
+//    0 <= nums.length <= 20
+//    -231 <= nums[i] <= 231 - 1
+//    All the values of nums are unique.
+//    nums is sorted in ascending order.
+
+// time complexity: O(n)
+// space complexity: O(1)
+vector<string> summaryRanges(vector<int> &nums) {
+    std::vector<string> ans;
+    for (int i = 0; i < nums.size(); ++i) {
+        int left = nums[i];
+        while (i + 1 < nums.size() && nums[i] + 1 == nums[i + 1]) {
+            ++i;
+        }
+
+        if (left == nums[i]) {
+            ans.push_back(to_string(left));
+        } else {
+            ans.push_back(to_string(left) + "->" + to_string(nums[i]));
+        }
+    }
+    return ans;
+}
+
+// 57. Insert Interval
+//
+//You are given an array of non-overlapping intervals intervals where intervals[i] =
+// [starti, endi] represent the start and the end of the ith interval and intervals is sorted in ascending order by starti.
+// You are also given an interval newInterval = [start, end] that represents the start and end of another interval.
+//
+//Insert newInterval into intervals such that intervals is still sorted in ascending order by starti and intervals still does not have any overlapping intervals (merge overlapping intervals if necessary).
+//
+//Return intervals after the insertion.
+//
+//Example 1:
+//
+//Input: intervals = [[1,3],[6,9]], newInterval = [2,5]
+//Output: [[1,5],[6,9]]
+//
+//Example 2:
+//
+//Input: intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+//Output: [[1,2],[3,10],[12,16]]
+//Explanation: Because the new interval [4,8] overlaps with [3,5],[6,7],[8,10].
+//
+
+vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+
+}
+
 /// Stack
 
 /// TODO
@@ -574,15 +808,7 @@ int calculate(std::string s) {
     int output = 0;
     std::stack<char> stack1;
     std::reverse(s.begin(), s.end());
-    for (auto& elem: s) {
-        if (elem == ')') {
-            if (stack1.top() == '(') {
-                stack1.pop();
-                continue;
-            }
 
-        }
-    }
 }
 
 // 150. Evaluate Reverse Polish Notation
@@ -622,9 +848,9 @@ int calculate(std::string s) {
 //  = (0 + 17) + 5
 //  = 17 + 5
 //  = 22
-int evalRPN(std::vector<std::string>& tokens) {
+int evalRPN(std::vector<std::string> &tokens) {
     std::stack<int> s;
-    for (auto& elem: tokens) {
+    for (auto &elem: tokens) {
         if (elem == "+" || elem == "-" || elem == "*" || elem == "/") {
             auto val1 = s.top();
             s.pop();
@@ -697,12 +923,12 @@ public:
     int getMin() {
         return s2.top();
     }
+
 private:
     std::stack<int> s1;
     std::stack<int> s2;
 };
 
-/// 71 TODO
 //  71. Simplify Path
 //  Given a string path, which is an absolute path (starting with a slash '/') to a file or directory in a Unix-style file system, convert it to the simplified canonical path.
 //  The canonical path should have the following format:
@@ -746,42 +972,35 @@ private:
 //  and any multiple consecutive slashes (i.e. '//') are treated as a single slash '/'.
 //  For this problem, any other format of periods such as '...' are treated as file/directory names.
 std::string simplifyPath(std::string path) {
-    std::string output;
-    std::stack<int> s;
-    for (auto& elem: path) {
-        if (!s.empty() && s.size() == 2 && elem == '.' && s.top() == '.') {
-            s.pop();
-            s.pop();
+    stack<std::string> s;
+    std::string res;
+    for (int i = 0; i < path.size(); ++i) {
+        if (path[i] == '/') {
             continue;
         }
 
-        if (!s.empty() && s.size() > 1 && elem == '.' && s.top() == '.') {
-            s.pop();
-            s.pop();
-            s.pop();
-            continue;
-        }
-        if (!s.empty() && elem == '/' && s.top() == '/') {
-            continue;
+        std::string tmp;
+        while (i != path.size() && path[i] != '/') {
+            tmp += path[i];
+            i++;
         }
 
-        if (!s.empty() && elem == '/' && s.top() == '.') {
-            s.pop();
+        if (tmp == ".") {
             continue;
+        } else if (tmp == "..") {
+            if (!s.empty())  s.pop();
+        } else {
+            s.push(tmp);
         }
-        s.push(elem);
     }
-
-    if (s.empty()) return "/";
-    if (s.top() == '/' && s.size() > 1) s.pop();
-    if (s.top() == '.' && s.size() > 1) s.pop();
 
     while (!s.empty()) {
-        output += s.top();
+        res = "/" + s.top() + res;
         s.pop();
     }
-    std::reverse(output.begin(), output.end());
-    return output;
+
+    if (res.empty()) res = "/";
+    return res;
 }
 
 // 20. Valid Parentheses
@@ -810,9 +1029,10 @@ std::string simplifyPath(std::string path) {
 // "({[)"
 bool isValid(std::string s) {
     std::stack<char> stack;
-    for (auto& elem: s) {
+    for (auto &elem: s) {
         if (!stack.empty()) {
-            if ((stack.top() == '(' && elem == ')') || (stack.top() == '[' && elem == ']') || (stack.top() == '{' && elem == '}')) {
+            if ((stack.top() == '(' && elem == ')') || (stack.top() == '[' && elem == ']') ||
+                (stack.top() == '{' && elem == '}')) {
                 stack.pop();
                 continue;
             }
@@ -845,11 +1065,11 @@ bool isValid(std::string s) {
 //Input: head = [1,2,3,4,4,4,5,6]
 //Output: [3]
 struct ListNode {
-    ListNode* next;
+    ListNode *next;
     double val;
 };
 
-ListNode* deleteDuplicates(ListNode* head) {
+ListNode *deleteDuplicates(ListNode *head) {
     if (head == nullptr) return nullptr;
     if (head->next == nullptr) return head;
 
@@ -933,8 +1153,8 @@ ListNode* deleteDuplicates(ListNode* head) {
 class Node {
 public:
     int val;
-    Node* next;
-    Node* random;
+    Node *next;
+    Node *random;
 
     Node(int _val) {
         val = _val;
@@ -943,8 +1163,9 @@ public:
     }
 };
 
-std::unordered_map<Node*, Node*> cacheMap;
-Node* copyRandomList(Node* head) {
+std::unordered_map<Node *, Node *> cacheMap;
+
+Node *copyRandomList(Node *head) {
     if (head == nullptr) return nullptr;
     if (!cacheMap.count(head)) {
         auto N = new Node(head->val);
@@ -955,8 +1176,8 @@ Node* copyRandomList(Node* head) {
     return cacheMap[head];
 }
 
-Node* copyRandomList2(Node* head) {
-    std::unordered_map<Node*, Node*> cacheMap;
+Node *copyRandomList2(Node *head) {
+    std::unordered_map<Node *, Node *> cacheMap;
     auto tmp = head;
     while (tmp != nullptr) {
         auto N = new Node(tmp->val);
@@ -973,7 +1194,7 @@ Node* copyRandomList2(Node* head) {
     return cacheMap[head];
 }
 
-Node* copyRandomList3(Node* head) {
+Node *copyRandomList3(Node *head) {
     auto tmp = head;
     while (tmp->next != nullptr) {
         auto N = new Node(tmp->val);
@@ -1023,13 +1244,16 @@ struct TreeNode {
     int val;
     TreeNode *left;
     TreeNode *right;
+
     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-std::vector<std::vector<int>> zigzagLevelOrder(TreeNode* root) {
-    std::queue<TreeNode*> q;
+std::vector<std::vector<int>> zigzagLevelOrder(TreeNode *root) {
+    std::queue<TreeNode *> q;
     std::vector<std::vector<int>> output;
     if (root == nullptr) return output;
     q.push(root);
@@ -1052,8 +1276,8 @@ std::vector<std::vector<int>> zigzagLevelOrder(TreeNode* root) {
     return output;
 }
 
-std::vector<std::vector<int>> LevelOrder(TreeNode* root) {
-    std::queue<TreeNode*> q;
+std::vector<std::vector<int>> LevelOrder(TreeNode *root) {
+    std::queue<TreeNode *> q;
     std::vector<std::vector<int>> output;
     if (root == nullptr) return output;
     q.push(root);
@@ -1112,7 +1336,7 @@ public:
     class TrieNode {
     public:
         bool _isLeaf{};
-        std::map<char, TrieNode*> _sonMap;
+        std::map<char, TrieNode *> _sonMap;
     };
 
     Trie() {
@@ -1121,7 +1345,7 @@ public:
 
     void insert(std::string word) {
         auto tmp = root;
-        for (auto& elem: word) {
+        for (auto &elem: word) {
             if (tmp->_sonMap.find(elem) != tmp->_sonMap.end()) {
                 tmp = tmp->_sonMap[elem];
                 continue;
@@ -1134,7 +1358,7 @@ public:
 
     bool search(std::string word) {
         auto tmp = root;
-        for (auto& elem: word) {
+        for (auto &elem: word) {
             if (tmp->_sonMap.find(elem) != tmp->_sonMap.end()) {
                 tmp = tmp->_sonMap[elem];
             } else {
@@ -1146,7 +1370,7 @@ public:
 
     bool startsWith(std::string prefix) {
         auto tmp = root;
-        for (auto& elem: prefix) {
+        for (auto &elem: prefix) {
             if (tmp->_sonMap.find(elem) != tmp->_sonMap.end()) {
                 tmp = tmp->_sonMap[elem];
             } else {
@@ -1156,7 +1380,7 @@ public:
         return true;
     }
 
-    TrieNode* root;
+    TrieNode *root;
 };
 
 // 211. Design Add and Search Words Data Structure
@@ -1191,10 +1415,10 @@ public:
     class TrieNode {
     public:
         bool _isLeaf{};
-        std::map<char, TrieNode*> _sonMap;
+        std::map<char, TrieNode *> _sonMap;
     };
 
-    TrieNode* root;
+    TrieNode *root;
 
     WordDictionary() {
         root = new TrieNode();
@@ -1202,7 +1426,7 @@ public:
 
     void addWord(std::string word) {
         auto tmp = root;
-        for (auto& elem: word) {
+        for (auto &elem: word) {
             if (tmp->_sonMap.find(elem) != tmp->_sonMap.end()) {
                 tmp = tmp->_sonMap[elem];
                 continue;
@@ -1213,15 +1437,15 @@ public:
         tmp->_isLeaf = true;
     }
 
-    bool searchHelper(std::string word, TrieNode* inNode) {
-        for (int i = 0; i <  word.size(); ++i) {
+    bool searchHelper(std::string word, TrieNode *inNode) {
+        for (int i = 0; i < word.size(); ++i) {
             auto elem = word[i];
             if (inNode->_sonMap.find(elem) != inNode->_sonMap.end()) {
                 inNode = inNode->_sonMap[elem];
             } else {
                 if (elem == '.') {
                     vector<char> keys;
-                    for(auto & itr : inNode->_sonMap)
+                    for (auto &itr: inNode->_sonMap)
                         keys.push_back(itr.first);
 
                     for (auto val: keys)
@@ -1260,28 +1484,33 @@ public:
 //Output: ["()"]
 
 class Solution {
-    void backtrack(vector<string>& ans, string& cur, int open, int close, int n) {
+private:
+    vector<string> ans;
+    string cur;
+
+    void backtrack(int open, int close, int n) {
         if (cur.size() == n * 2) {
             ans.push_back(cur);
             return;
         }
         if (open < n) {
             cur.push_back('(');
-            backtrack(ans, cur, open + 1, close, n);
+            backtrack(open + 1, close, n);
             cur.pop_back();
         }
         if (close < open) {
             cur.push_back(')');
-            backtrack(ans, cur, open, close + 1, n);
+            backtrack(open, close + 1, n);
             cur.pop_back();
         }
     }
+
 public:
     vector<string> generateParenthesis(int n) {
         vector<string> result;
-        string current;
-        backtrack(result, current, 0, 0, n);
-        return result;
+        if (n == 0) return result;
+        backtrack(0, 0, n);
+        return ans;
     }
 };
 
@@ -1307,81 +1536,10 @@ public:
 //Input: head = []
 //Output: []
 
-//ListNode* at(ListNode* head, int index) {
-//    auto tmp = head;
-//    while (index != 0) {
-//        tmp = tmp->next;
-//        --index;
-//    }
-//    return tmp;
-//}
-//
-//void myMerge(ListNode* head, int left, int mid, int right) {
-//    ListNode* dummyTmpHead = new ListNode();
-//    auto tmp = dummyTmpHead;
-//    int i = left, j = mid + 1;
-//    int k = 0;
-//    while (i <= mid && j <= right) {
-//        int val1 = at(head, i)->val;
-//        int val2 = at(head, j)->val;
-//        if (val1 <= val2) {
-//            tmp->val = val1;
-//            ++i;
-//        } else {
-//            tmp->val = val2;
-//            ++j;
-//        }
-//
-//        if (i <= mid || j <= right) {
-//            tmp->next = new ListNode();
-//            tmp = tmp->next;
-//        }
-//        ++k;
-//    }
-//
-//    if (i <= mid) tmp->next = at(head, i);
-//    if (j <= right) tmp->next = at(head, j);
-//
-//    tmp = dummyTmpHead;
-//    auto tmpHead = head;
-//    while (left != 0) {
-//        tmpHead = tmpHead->next;
-//        --left;
-//    }
-//
-//    for (int w = 0; w < k; ++w) {
-//        tmpHead->val = tmp->val;
-//        tmpHead = tmpHead->next;
-//        tmp = tmp->next;
-//    }
-//}
-//
 ////Input: head = [4,2,1,3]
-//
-//void mySort(ListNode* head, int left, int right) {
-//    if (left < right) {
-//        int mid = (left + right) / 2;
-//        mySort(head, left, mid);
-//        mySort(head, mid + 1, right);
-//        myMerge(head, left, mid, right);
-//    }
-//}
-//
-//
-//ListNode* sortList(ListNode* head) {
-//    if (head == nullptr) return nullptr;
-//    int left = 0, right = -1;
-//    auto tmp = head;
-//    while (tmp != nullptr) {
-//        tmp = tmp->next;
-//        ++right;
-//    }
-//    mySort(head, left, right);
-//    return head;
-
-ListNode* merge(ListNode* list1, ListNode* list2) {
-    ListNode* dummyHead = new ListNode();
-    ListNode* ptr = dummyHead;
+ListNode *merge(ListNode *list1, ListNode *list2) {
+    ListNode *dummyHead = new ListNode();
+    ListNode *ptr = dummyHead;
     while (list1 && list2) {
         if (list1->val < list2->val) {
             ptr->next = list1;
@@ -1392,28 +1550,28 @@ ListNode* merge(ListNode* list1, ListNode* list2) {
         }
         ptr = ptr->next;
     }
-    if(list1) ptr->next = list1;
+    if (list1) ptr->next = list1;
     else ptr->next = list2;
     return dummyHead->next;
 }
 
-ListNode* getMid(ListNode* head) {
-    ListNode* midPrev = nullptr;
+ListNode *getMid(ListNode *head) {
+    ListNode *midPrev = nullptr;
     while (head && head->next) {
         midPrev = (midPrev == nullptr) ? head : midPrev->next;
         head = head->next->next;
     }
-    ListNode* mid = midPrev->next;
+    ListNode *mid = midPrev->next;
     midPrev->next = nullptr;
     return mid;
 }
 
-ListNode* sortList(ListNode* head) {
+ListNode *sortList(ListNode *head) {
     if (!head || !head->next)
         return head;
-    ListNode* mid = getMid(head);
-    ListNode* left = sortList(head);
-    ListNode* right = sortList(mid);
+    ListNode *mid = getMid(head);
+    ListNode *left = sortList(head);
+    ListNode *right = sortList(mid);
     return merge(left, right);
 }
 
@@ -1446,7 +1604,7 @@ ListNode* sortList(ListNode* head) {
 //Output: 23
 //Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
 
-int maxSubArray(std::vector<int>& nums) {
+int maxSubArray(std::vector<int> &nums) {
     int n = nums.size();
     if (n == 1) return nums[0];
     std::vector<int> dp(n, 0);
@@ -1457,7 +1615,7 @@ int maxSubArray(std::vector<int>& nums) {
     return *std::max(dp.begin(), dp.end());
 }
 
-int maxSubArrayOptimized(std::vector<int>& nums) {
+int maxSubArrayOptimized(std::vector<int> &nums) {
     int n = nums.size();
     if (n == 1) return nums[0];
     int dp0 = nums[0];
@@ -1498,7 +1656,7 @@ int maxSubArrayOptimized(std::vector<int>& nums) {
 // [1, 2, 3, 4, 5]
 
 // [1,-2,3,-2]
-int maxSubarraySumCircular(std::vector<int>& nums) {
+int maxSubarraySumCircular(std::vector<int> &nums) {
     int n = nums.size();
     if (n == 1) return nums[0];
     int ans1;
@@ -1578,18 +1736,18 @@ int maxSubarraySumCircular(std::vector<int>& nums) {
 //Input: nums = [1,3,5,6], target = 7
 //Output: 4
 
-bool binarySearch(vector<int>& nums, int target) {
+bool binarySearch(vector<int> &nums, int target) {
     int left = 0, right = nums.size() - 1;
     while (left <= right) {
         int mid = left + (right - left) / 2;
         if (nums[mid] == target) return true;
-        else if (nums[mid] > target) right = mid -1;
+        else if (nums[mid] > target) right = mid - 1;
         else left = mid + 1;
     }
     return left;
 }
 
-int searchInsert(vector<int>& nums, int target) {
+int searchInsert(vector<int> &nums, int target) {
     int left = 0;
     int right = nums.size() - 1;
 
@@ -1640,7 +1798,7 @@ int searchInsert(vector<int>& nums, int target) {
 //    1 <= m, n <= 100
 //    -104 <= matrix[i][j], target <= 104
 
-bool searchMatrix(vector<vector<int>>& matrix, int target) {
+bool searchMatrix(vector<vector<int>> &matrix, int target) {
     int n = matrix.size();
     int m = matrix[0].size();
     if (m == 0 && n == 0) return false;
@@ -1683,7 +1841,7 @@ bool searchMatrix(vector<vector<int>>& matrix, int target) {
 //Explanation: Your function can return either index number 1 where the peak element is 2, or index number 5 where the peak element is 6.
 //
 
-int findPeakElement(vector<int>& nums) {
+int findPeakElement(vector<int> &nums) {
     int n = nums.size();
     if (nums.empty()) return -1;
     if (n == 1) return 0;
@@ -1743,9 +1901,23 @@ int findPeakElement(vector<int>& nums) {
 //
 //Input: nums = [1], target = 0
 //Output: -1
+
+
+//Time complexity: O(logn)
+//This algorithm only requires one binary search over nums.
 //
-int search(vector<int>& nums, int target) {
-    if (nums.size() == 1) return nums[0] == target;
+//Space complexity: O(1)
+//We only need to update several parameters left, right and mid, which takes O(1) space.
+//
+int search(vector<int> &nums, int target) {
+    if (nums.size() == 1) {
+        if (nums[0] == target) {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
     int l = 0;
     int r = nums.size() - 1;
     int m;
@@ -1780,6 +1952,7 @@ int search(vector<int>& nums, int target) {
     return -1;
 }
 
+
 // 34. Find First and Last Position of Element in Sorted Array
 //
 //Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
@@ -1808,24 +1981,34 @@ int search(vector<int>& nums, int target) {
 //Input: nums = [5,7,8,8,8,10], target = 8
 //Output: [2,4]
 
-int search(std::vector<int>& nums, int target, bool isLeft) {
+int LeftSearch(std::vector<int> &nums, int target) {
     int l = 0, r = nums.size() - 1;
     while (l <= r) {
         int m = (l + r) / 2;
         if (nums[m] == target) {
-
-            if (isLeft) {
-                if (m != 0 && nums[m - 1] == target) {
-                    r = m - 1;
-                } else {
-                    return m;
-                }
+            if (m != 0 && nums[m - 1] == target) {
+                r = m - 1;
             } else {
-                if (m != nums.size() - 1 && nums[m + 1] == target) {
-                    l = m + 1;
-                } else {
-                    return m;
-                }
+                return m;
+            }
+        } else if (nums[m] < target) {
+            l = m + 1;
+        } else {
+            r = m - 1;
+        }
+    }
+    return -1;
+}
+
+int RightSearch(std::vector<int> &nums, int target) {
+    int l = 0, r = nums.size() - 1;
+    while (l <= r) {
+        int m = (l + r) / 2;
+        if (nums[m] == target) {
+            if (m != nums.size() - 1 && nums[m + 1] == target) {
+                l = m + 1;
+            } else {
+                return m;
             }
 
         } else if (nums[m] < target) {
@@ -1837,11 +2020,11 @@ int search(std::vector<int>& nums, int target, bool isLeft) {
     return -1;
 }
 
-std::vector<int> searchRange(std::vector<int>& nums, int target) {
+std::vector<int> searchRange(std::vector<int> &nums, int target) {
     std::vector<int> output = {-1, -1};
     if (nums.empty()) return output;
-    int l = search(nums, target, true);
-    int r = search(nums, target, false);
+    int l = LeftSearch(nums, target);
+    int r = RightSearch(nums, target);
     output[0] = l;
     output[1] = r;
     if (l == -1 && r != -1) {
@@ -1882,19 +2065,24 @@ std::vector<int> searchRange(std::vector<int>& nums, int target) {
 //Input: nums = [11,13,15,17]
 //Output: 11
 //Explanation: The original array was [11,13,15,17] and it was rotated 4 times.
-//
 
-int findMin(std::vector<int>& nums) {
+// Example 4:
+// Input: [3,1,2]
+// Output: 1
+
+// Complexity Analysis
+//    Time Complexity : Same as Binary Search O(logN)
+//    Space Complexity : O(1)
+
+int findMin(std::vector<int> &nums) {
     int left = 0, right = nums.size() - 1;
     while (left <= right) {
         int mid = (right + left) / 2;
-        if (nums[mid] < nums[right]) {
-            right = mid;
-        }
-        else if (nums[mid] > nums[right]) {
+        if (nums[mid] > nums[right]) {
             left = mid + 1;
-        }
-        else {
+        } else if (nums[right] > nums[mid]) {
+            right = mid;
+        } else {
             break;
         }
     }
@@ -1902,7 +2090,6 @@ int findMin(std::vector<int>& nums) {
 }
 
 // 4. Median of Two Sorted Arrays
-/// ???????????????????????
 //
 //Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
 //
@@ -1922,16 +2109,60 @@ int findMin(std::vector<int>& nums) {
 //Output: 2.50000
 //Explanation: merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.
 
+class SolutionBinary {
+public:
+    double findMedianSortedArrays(vector<int> &A, vector<int> &B) {
+        int na = int(A.size()), nb = int(B.size());
+        int n = na + nb;
+        if (n % 2) {
+            return solve(A, B, n / 2, 0, na - 1, 0, nb - 1);
+        } else {
+            return 1.0 * (solve(A, B, n / 2 - 1, 0, na - 1, 0, nb - 1) + solve(A, B, n / 2, 0, na - 1, 0, nb - 1)) / 2;
+        }
+    }
+
+    int solve(vector<int> &A, vector<int> &B, int k, int aStart, int aEnd, int bStart, int bEnd) {
+        // If the segment of on array is empty, it means we have passed all
+        // its element, just return the corresponding element in the other array.
+        if (aEnd < aStart) {
+            return B[k - aStart];
+        }
+        if (bEnd < bStart) {
+            return A[k - bStart];
+        }
+
+        // Get the middle indexes and middle values of A and B.
+        int aIndex = (aStart + aEnd) / 2, bIndex = (bStart + bEnd) / 2;
+        int aValue = A[aIndex], bValue = B[bIndex];
+
+        // If k is in the right half of A + B, remove the smaller left half.
+        if (aIndex + bIndex < k) {
+            if (aValue > bValue) {
+                return solve(A, B, k, aStart, aEnd, bIndex + 1, bEnd);
+            } else {
+                return solve(A, B, k, aIndex + 1, aEnd, bStart, bEnd);
+            }
+        }
+            // Otherwise, remove the larger right half.
+        else {
+            if (aValue > bValue) {
+                return solve(A, B, k, aStart, aIndex - 1, bStart, bEnd);
+            } else {
+                return solve(A, B, k, aStart, aEnd, bStart, bIndex - 1);
+            }
+        }
+        return -1;
+    }
+};
+
 // mergeSort
 // time: O(n + m)
 // space: O(1)
-class Solution4 {
+class SolutionMergeSort {
 public:
     int p1 = 0, p2 = 0;
 
-    // Get the smaller value between nums1[p1] and nums2[p2] and move the pointer forward.
-
-    int getMin(vector<int>& nums1, vector<int>& nums2) {
+    int getMin(vector<int> &nums1, vector<int> &nums2) {
         if (p1 < nums1.size() && p2 < nums2.size()) {
             return nums1[p1] < nums2[p2] ? nums1[p1++] : nums2[p2++];
         } else if (p1 < nums1.size()) {
@@ -1942,21 +2173,19 @@ public:
         return -1;
     }
 
-    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+    double findMedianSortedArrays(vector<int> &nums1, vector<int> &nums2) {
         int m = int(nums1.size()), n = int(nums2.size());
-
         if ((m + n) % 2 == 0) {
             for (int i = 0; i < (m + n) / 2 - 1; ++i) {
                 int _ = getMin(nums1, nums2);
             }
-            return (double)(getMin(nums1, nums2) + getMin(nums1, nums2)) / 2;
+            return (double) (getMin(nums1, nums2) + getMin(nums1, nums2)) / 2.0;
         } else {
             for (int i = 0; i < (m + n) / 2; ++i) {
                 int _ = getMin(nums1, nums2);
             }
             return getMin(nums1, nums2);
         }
-
         return -1;
     }
 };
@@ -1980,7 +2209,7 @@ public:
 // Input: nums = [3,2,3,1,2,4,5,5,6], k = 4
 // Output: 4
 
-int findKthLargest(std::vector<int>& nums, int k) {
+int findKthLargest(std::vector<int> &nums, int k) {
     // default max heap
     std::priority_queue<int> pq(nums.begin(), nums.end());
     while (k != 1) {
@@ -2100,39 +2329,33 @@ private:
 //Input: k = 3, w = 0, profits = [1,2,3], capital = [0,1,2]
 //Output: 6
 
-int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
+int findMaximizedCapital(int k, int w, vector<int> &profits, vector<int> &capital) {
+    int n = capital.size();
+    std::priority_queue<int, vector<int>, less<>> pq;
+    std::vector<std::pair<int, int>> arr;
+    for (int i = 0; i < n; ++i) {
+        arr.push_back({capital[i], profits[i]});
+    }
+    std::sort(arr.begin(), arr.end());
 
+    int cur_index = 0;
+    for (int i = 0; i < k; ++i) {
+        while (cur_index < n && w >= arr[cur_index].first) {
+            pq.push(arr[cur_index].second);
+            ++cur_index;
+        }
+
+        if (!pq.empty()) {
+            w += pq.top();
+            pq.pop();
+        } else {
+            break;
+        }
+    }
+    return w;
 }
 
-class Solution502 {
-public:
-    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
-        int n = profits.size();
-        int curr = 0;
-        priority_queue<int, vector<int>, less<>> pq;
-        vector<pair<int,int>> arr;
-        for (int i = 0; i < n; ++i) {
-            arr.emplace_back(capital[i], profits[i]);
-        }
-        sort(arr.begin(), arr.end());//以first为准排序arr，默认为升序，即需求资本从小到大
-        //大循环：投资k个项目
-        for (int i = 0; i < k; ++i) {
-            //将需求资本小于等于已有资本的项目的利润压入大顶堆
-            while (curr < n && arr[curr].first <= w) {
-                pq.push(arr[curr].second);
-                curr++;
-            }
 
-            if (!pq.empty()) {
-                w += pq.top();
-                pq.pop();
-            } else {
-                break;
-            }
-        }
-        return w;
-    }
-};
 
 // 373. Find K Pairs with Smallest Sums
 //
@@ -2162,7 +2385,7 @@ public:
 //Output: [[1,3],[2,3]]
 //Explanation: All possible pairs are returned from the sequence: [1,3],[2,3]
 
-vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+vector<vector<int>> kSmallestPairs(vector<int> &nums1, vector<int> &nums2, int k) {
     auto comp = [](vector<int> &p1, vector<int> &p2) {
         return p1[0] + p1[1] < p2[0] + p2[1];
     };
@@ -2253,6 +2476,7 @@ int math172(int n) {
     }
     return std::min(count2, count5);
 }
+
 // 30
 // O(log(n)), O(1)
 int math172Optimized(int n) {
@@ -2278,7 +2502,7 @@ int math172Optimized(int n) {
 //
 //Input: points = [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
 //Output: 4
-int maxPoints(vector<vector<int>>& points) {
+int maxPoints(vector<vector<int>> &points) {
     auto n = points.size();
     if (n == 0) return 0;
     if (n == 1) return 1;
@@ -2330,11 +2554,11 @@ int maxPoints(vector<vector<int>>& points) {
 // [278,274,153,490]
 // 8633
 
-int coinChange(std::vector<int>& coins, int amount) {
+int coinChange(std::vector<int> &coins, int amount) {
     if (amount == 0) return 0;
 
     std::vector<int> dp(amount + 1, 1e7);
-    for (auto& elem: coins) {
+    for (auto &elem: coins) {
         if (elem > amount) continue;
         dp[elem] = 1;
     }
@@ -2342,60 +2566,13 @@ int coinChange(std::vector<int>& coins, int amount) {
     dp[0] = 0;
     for (int i = 1; i <= amount; ++i) {
         if (dp[i] == 1) continue;
-        for (int coin : coins) {
+        for (int coin: coins) {
             if (coin <= i) {
                 dp[i] = std::min(dp[i], dp[i - coin] + 1);
             }
         }
     }
-    return dp[amount] >= 1e7 ? -1: dp[amount];
-}
-
-// 198. House Robber
-//
-//You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed,
-//the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected
-//and it will automatically contact the police if two adjacent houses were broken into on the same night.
-//
-//Given an integer array nums representing the amount of money of each house,
-//return the maximum amount of money you can rob tonight without alerting the police.
-//
-//Example 1:
-//
-//Input: nums = [1,2,3,1]
-// [0，1,2,3,1]
-//Output: 4
-//Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
-//Total amount you can rob = 1 + 3 = 4.
-//
-//Example 2:
-//
-//Input: nums = [2,7,9,3,1]
-//Output: 12
-//Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
-//Total amount you can rob = 2 + 9 + 1 = 12.
-
-int rob(std::vector<int>& nums) {
-    std::vector<int> dp(nums.size() + 1, 0);
-    dp[0] = 0;
-    dp[1] = nums[0];
-    for (int i = 2; i <= nums.size(); ++i) {
-        dp[i] = std::max(dp[i - 1], dp[i - 2] + nums[i - 1]);
-    }
-    return dp[nums.size()];
-}
-
-int robOptimized(std::vector<int>& nums) {
-    if (nums.empty()) return 0;
-    int d0 = 0;
-    int d1 = nums[0];
-    int d2 = nums[0];
-    for (int i = 2; i <= nums.size(); ++i) {
-        d2 = std::max(d1, d0 + nums[i - 1]);
-        d0 = d1;
-        d1 = d2;
-    }
-    return d2;
+    return dp[amount] >= 1e7 ? -1 : dp[amount];
 }
 
 //  139. Word Break
@@ -2421,12 +2598,12 @@ int robOptimized(std::vector<int>& nums) {
 //  Output: false
 //
 
-bool wordBreak(std::string s, std::vector<std::string>& wordDict) {
+bool wordBreak(std::string s, std::vector<std::string> &wordDict) {
     std::vector<bool> dp(s.size() + 1, false);
     dp[0] = true;
     for (int i = 1; i <= s.size(); ++i) {
         for (int j = 0; j <= i; ++j) {
-            if (dp[j] && std::find(wordDict.begin(), wordDict.end(), s.substr(j, i)) != wordDict.end()) {
+            if (dp[j] && std::find(wordDict.begin(), wordDict.end(), s.substr(j, i - j)) != wordDict.end()) {
                 dp[i] = true;
                 break;
             }
@@ -2473,7 +2650,7 @@ bool wordBreak(std::string s, std::vector<std::string>& wordDict) {
 int minDistance(std::string word1, std::string word2) {
     if (word1.empty()) return word2.size();
     if (word2.empty()) return word1.size();
-    std::vector<std::vector<int>> dp(word1.size() + 1, std::vector<int> (word2.size() + 1, 0));
+    std::vector<std::vector<int>> dp(word1.size() + 1, std::vector<int>(word2.size() + 1, 0));
     for (int i = 0; i <= word1.size(); ++i) {
         dp[i][0] = i;
     }
@@ -2571,26 +2748,26 @@ void testing123() {
     std::vector<int> v = {2};
     coinChange(v, 1);
 
-    std::vector<int> h = {3,2,1,5,6,4};
+    std::vector<int> h = {3, 2, 1, 5, 6, 4};
     findKthLargest(h, 2);
     isIsomorphic("badc", "baba");
 
-    std::string s = "leetcode";
-    std::vector<std::string> ss = {"leet", "code"};
-    wordBreak(s,ss);
+    std::string s = "applepenapple";
+    std::vector<std::string> ss = {"apple", "pen"};
+    wordBreak(s, ss);
 
-    std::vector<int> z = {1,2,3,4,5,8,10,11,12,13, 14, 15};
+    std::vector<int> z = {1, 2, 3, 4, 5, 8, 10, 11, 12, 13, 14, 15};
     longestConsecutive(z);
-    reverseWords("    a good    example    ");
+    reverseWords("F R  I   E    N     D      S      ");
     math172Optimized(30);
 
     std::vector<int> ll = {2, 5, 0, 0};
     canJump12(ll);
 
-    std::vector<int> jj = {2,3,0,1,4};
+    std::vector<int> jj = {2, 3, 0, 1, 4};
     jump2(jj);
 
-    std::vector<int> lls = {-2,1,-3,4,-1,2,1,-5,4};
+    std::vector<int> lls = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
     maxSubArrayOptimized(lls);
     std::string s1 = "aaaa";
     std::string s2 = "dog cat cat dog";
@@ -2606,17 +2783,17 @@ void testing123() {
     auto k4 = wordDictionary.search("b.."); // return True
     int kkk = 0;
 
-    std::vector<int> scs = {8,8,8,8,8,8};
+    std::vector<int> scs = {8, 8, 8, 8, 8, 8};
     auto px = searchRange(scs, 8);
     int jkjj = 0;
 
-    ListNode* h1 = new ListNode();
+    ListNode *h1 = new ListNode();
     h1->val = 4;
-    ListNode* h2 = new ListNode();
+    ListNode *h2 = new ListNode();
     h2->val = 1;
-    ListNode* h3 = new ListNode();
+    ListNode *h3 = new ListNode();
     h3->val = 3;
-    ListNode* h4 = new ListNode();
+    ListNode *h4 = new ListNode();
     h4->val = 2;
 
     h1->next = h2;
@@ -2626,17 +2803,17 @@ void testing123() {
     sortList(h1);
     int kkks = 0;
 
-    std::vector<int> nums1 = {1,-2,3,-2}, nums2 = {3, 4, 3, 2, 1};
+    std::vector<int> nums1 = {1, -2, 3, -2}, nums2 = {3, 4, 3, 2, 1};
     findPeakElement(nums2);
     maxSubarraySumCircular(nums1);
 
-    ListNode* r1 = new ListNode();
-    ListNode* r2 = new ListNode();
-    ListNode* r3 = new ListNode();
-    ListNode* r4 = new ListNode();
-    ListNode* r5 = new ListNode();
-    ListNode* r6 = new ListNode();
-    ListNode* r7 = new ListNode();
+    ListNode *r1 = new ListNode();
+    ListNode *r2 = new ListNode();
+    ListNode *r3 = new ListNode();
+    ListNode *r4 = new ListNode();
+    ListNode *r5 = new ListNode();
+    ListNode *r6 = new ListNode();
+    ListNode *r7 = new ListNode();
     r1->val = 1;
     r2->val = 2;
     r3->val = 3;
@@ -2651,5 +2828,27 @@ void testing123() {
     r5->next = r6;
     r6->next = r7;
     deleteDuplicates(r1);
+    std::vector<int> nums3 = {1, 2, 3, 4};
+    productExceptSelf(nums3);
+
+
+    RandomizedSet randomizedSet;
+    randomizedSet.insert(1); // Inserts 1 to the set. Returns true as 1 was inserted successfully.
+    randomizedSet.remove(2); // Returns false as 2 does not exist in the set.
+    randomizedSet.insert(2); // Inserts 2 to the set, returns true. Set now contains [1,2].
+    randomizedSet.getRandom(); // getRandom() should return either 1 or 2 randomly.
+    randomizedSet.remove(1); // Removes 1 from the set, returns true. Set now contains [2].
+    randomizedSet.insert(2); // 2 was already in the set, so return false.
+    randomizedSet.getRandom(); // Since 2 is the only number in the set, getRandom() will always return 2.
+
+    // ["RandomizedSet","remove","remove","insert","getRandom","remove","insert"]
+    // [[],[0],[0],[0],[],[0],[0]]
+    RandomizedSet randomizedSet2;
+    randomizedSet2.remove(0);
+    randomizedSet2.remove(0);
+    randomizedSet2.insert(0);
+    randomizedSet2.getRandom();
+    randomizedSet2.remove(0);
+    randomizedSet2.insert(0);
 }
 
