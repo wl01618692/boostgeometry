@@ -9,6 +9,7 @@
 #include <set>
 #include <unordered_set>
 #include <numeric>
+#include <list>
 
 using namespace std;
 
@@ -249,22 +250,27 @@ int hIndexCountingSort(vector<int> &citations) {
     return k;
 }
 
-void countingSort(std::vector<int> array) {
+std::vector<int> countingSort(std::vector<int> vec) {
+    int max = INT32_MIN;
+    int min = INT32_MAX;
+    for (auto elem: vec) {
+        max = std::max(max, elem);
+        min = std::min(min, elem);
+    }
+    std::vector<int> count(vec.size(), 0);
+    for (auto elem: vec) {
+        count[elem - min]++;
+    }
 
+    std::vector<int> output(vec.size(), 0);
+    for (int i = 0, j = 0; i < vec.size(); ++i) {
+        while (count[i] > 0) {
+            output[j++] = i + min;
+            --count[i];
+        }
+    }
+    return output;
 }
-
-// def counting_sort(array):
-//    largest = max(array); smallest = min(array)  # 获取最大，最小值
-//    counter = [0 for i in range(largest-smallest+1)]  # 用于统计个数的空数组
-//    idx = 0  # 桶内索引值
-//    for i in range(len(array)):
-//        counter[array[i]-smallest] += 1  # 统计每个元素出现的次数
-//    for j in range(len(counter)):
-//        while counter[j] > 0:
-//            array[idx] = j + smallest  # 取出元素
-//            idx += 1
-//            counter[j] -= 1
-//    return array
 
 // 238. Product of Array Except Self
 //
@@ -391,7 +397,6 @@ public:
         if (mp.find(val) == mp.end()) {
             return false;
         }
-        // move the last element to the place idx of the element to delete
         int lastElement = v[v.size() - 1];
         int idx = mp[val];
         v[idx] = lastElement;
@@ -409,6 +414,116 @@ public:
     std::unordered_map<int, int> mp;
     std::vector<int> v;
 };
+
+// 12. Integer to Roman
+//
+//Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+//
+//Symbol       Value
+//I             1
+//V             5
+//X             10
+//L             50
+//C             100
+//D             500
+//M             1000
+//
+// For example, 2 is written as II in Roman numeral, just two one's added together. 12 is written as XII, which is simply X + II. The number 27 is written as XXVII, which is XX + V + II.
+// Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV.
+// Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+//
+//    I can be placed before V (5) and X (10) to make 4 and 9.
+//    X can be placed before L (50) and C (100) to make 40 and 90.
+//    C can be placed before D (500) and M (1000) to make 400 and 900.
+//
+//Given an integer, convert it to a roman numeral.
+//
+//Example 1:
+//
+//Input: num = 3
+//Output: "III"
+//Explanation: 3 is represented as 3 ones.
+//
+//Example 2:
+//
+//Input: num = 58
+//Output: "LVIII"
+//Explanation: L = 50, V = 5, III = 3.
+//
+//Example 3:
+//
+//Input: num = 1994
+//Output: "MCMXCIV"
+//Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
+
+// time: O(1)
+// space: O(1)
+string intToRoman(int num) {
+    std::vector<int> values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    std::vector<std::string> symbols = {"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
+    std::string output;
+    for (int i = 0; i < values.size() && num > 0; ++i) {
+        while (values[i] <= num) {
+            num -= values[i];
+            output += symbols[i];
+        }
+    }
+    return output;
+}
+
+// 80. Remove Duplicates from Sorted Array II
+//
+// Given an integer array nums sorted in non-decreasing order, remove some duplicates in-place such that each unique element appears at most twice.
+// The relative order of the elements should be kept the same.
+//
+// Since it is impossible to change the length of the array in some languages, you must instead have the result be placed in the first part of the array nums.
+// More formally, if there are k elements after removing the duplicates, then the first k elements of nums should hold the final result. It does not matter what you leave beyond the first k elements.
+//
+//Return k after placing the final result in the first k slots of nums.
+//
+//Do not allocate extra space for another array. You must do this by modifying the input array in-place with O(1) extra memory.
+//
+//Custom Judge:
+//
+//The judge will test your solution with the following code:
+//
+//int[] nums = [...]; // Input array
+//int[] expectedNums = [...]; // The expected answer with correct length
+//
+//int k = removeDuplicates(nums); // Calls your implementation
+//
+//assert k == expectedNums.length;
+//for (int i = 0; i < k; i++) {
+//    assert nums[i] == expectedNums[i];
+//}
+//
+//If all assertions pass, then your solution will be accepted.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [1,1,1,2,2,3]
+//Output: 5, nums = [1,1,2,2,3,_]
+//Explanation: Your function should return k = 5, with the first five elements of nums being 1, 1, 2, 2 and 3 respectively.
+//It does not matter what you leave beyond the returned k (hence they are underscores).
+//
+//Example 2:
+//
+//Input: nums = [0,0,1,1,1,1,2,3,3]
+//Output: 7, nums = [0,0,1,1,2,3,3,_,_]
+//Explanation: Your function should return k = 7, with the first seven elements of nums being 0, 0, 1, 1, 2, 3 and 3 respectively.
+//It does not matter what you leave beyond the returned k (hence they are underscores).
+
+/// ？？？？？？？？
+int removeDuplicates(vector<int>& nums) {
+    int slow = 0, fast = 1;
+    int pos = 0;
+    while (slow < nums.size() && fast < nums.size()) {
+
+    }
+}
+
 
 /// Two pointers
 //392. Is Subsequence
@@ -444,9 +559,45 @@ bool isSubsequence(string s, string t) {
     return l == s.size();
 }
 
-
-
 /// Sliding window
+// 76. Minimum Window Substring
+//
+//Given two strings s and t of lengths m and n respectively, return the minimum window substring
+//of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
+//
+//The testcases will be generated such that the answer is unique.
+//
+//
+//
+//Example 1:
+//
+//Input: s = "ADOBECODEBANC", t = "ABC"
+//Output: "BANC"
+//Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from string t.
+//
+//Example 2:
+//
+//Input: s = "a", t = "a"
+//Output: "a"
+//Explanation: The entire string s is the minimum window.
+//
+//Example 3:
+//
+//Input: s = "a", t = "aa"
+//Output: ""
+//Explanation: Both 'a's from t must be included in the window.
+//Since the largest window of s only has one 'a', return empty string.
+//
+//
+//
+//Constraints:
+//
+//    m == s.length
+//    n == t.length
+//    1 <= m, n <= 105
+//    s and t consist of uppercase and lowercase English letters.
+
+
 /// Matrix
 // 36. Valid Sudoku
 //Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
@@ -780,7 +931,6 @@ vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInter
 
 /// Stack
 
-/// TODO
 // 224. Basic Calculator
 // Given a string s representing a valid expression, implement a basic calculator to evaluate it, and return the result of the evaluation.
 //
@@ -804,12 +954,127 @@ vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInter
 // (3 + ( 3 - 2))
 //  ))2 - 3 ( + 3 (
 // 4
+
+// Iterate the expression string in reverse order one character at a time.
+// Since we are reading the expression character by character, we need to be careful when we are reading digits and non-digits.
+//
+// The operands could be formed by multiple characters. A string "123" would mean a numeric 123, which could be formed as: 123 >> 120 + 3 >> 100 + 20 + 3.
+// Thus, if the character read is a digit we need to form the operand by multiplying a power of 10 to the current digit and adding it to the overall operand.
+// We do this since we are processing the string in the reverse order.
+//
+// The operands could be formed by multiple characters.
+// We need to keep track of an on-going operand. This part is a bit tricky since in this case the string is reversed.
+// Once we encounter a character which is not a digit, we push the operand onto the stack.
+//
+// When we encounter an opening parenthesis (, this means an expression just ended. Recall we have reversed the expression.
+// So an opening bracket would signify the end of the an expression.
+// This calls for evaluation of the expression by popping operands and operators off the stack till we pop corresponding closing parenthesis.
+// The final result of the expression is pushed back onto the stack.
+//
+// Note: We are evaluating all the sub-expressions within the main expression.
+// The sub-expressions on the right get evaluated first but the main expression itself is evaluated from left to right when all its components are resolved, which is very important for correct results.
+//
+// For eg. For expression A−(B+C)+(D+E−F)A - (B+C) + (D+E-F)A−(B+C)+(D+E−F), D+E−FD+E-FD+E−F is evaluated before B+CB+CB+C.
+// While evaluating D+E−FD+E-FD+E−F the order is from left to right.
+// Similarly for the parent expression, all the child components are evaluated and stored on the stack so that final evaluation is left to right.
+//
+// Push the other non-digits onto to the stack.
+//
+// Do this until we get the final result. It's possible that we don't have any more characters left to process but the stack is still non-empty. This would happen when the main expression is not enclosed by parenthesis. So, once we are done evaluating the entire expression, we check if the stack is non-empty. If it is, we treat the elements in it as one final expression and evaluate it the same way we would if we had encountered an opening bracket.
+//
+// We can also cover the original expression with a set of parenthesis to avoid this extra call.
+
 int calculate(std::string s) {
     int output = 0;
     std::stack<char> stack1;
     std::reverse(s.begin(), s.end());
+    for (auto elem: s) {
+        if (stack1.top() != '+' && stack1.top() != '-') {
 
+        }
+    }
+
+    return output;
 }
+
+// class Solution {
+//
+//    public int evaluateExpr(Stack<Object> stack) {
+//
+//        // If stack is empty or the expression starts with
+//        // a symbol, then append 0 to the stack.
+//        // i.e. [1, '-', 2, '-'] becomes [1, '-', 2, '-', 0]
+//        if (stack.empty() || !(stack.peek() instanceof Integer)) {
+//            stack.push(0);
+//        }
+//
+//        int res = (int) stack.pop();
+//
+//        // Evaluate the expression till we get corresponding ')'
+//        while (!stack.empty() && !((char) stack.peek() == ')')) {
+//
+//            char sign = (char) stack.pop();
+//
+//            if (sign == '+') {
+//                res += (int) stack.pop();
+//            } else {
+//                res -= (int) stack.pop();
+//            }
+//        }
+//        return res;
+//    }
+//
+//    public int calculate(String s) {
+//
+//        int operand = 0;
+//        int n = 0;
+//        Stack<Object> stack = new Stack<Object>();
+//
+//        for (int i = s.length() - 1; i >= 0; i--) {
+//
+//            char ch = s.charAt(i);
+//
+//            if (Character.isDigit(ch)) {
+//
+//                // Forming the operand - in reverse order.
+//                operand = (int) Math.pow(10, n) * (int) (ch - '0') + operand;
+//                n += 1;
+//
+//            } else if (ch != ' ') {
+//                if (n != 0) {
+//
+//                    // Save the operand on the stack
+//                    // As we encounter some non-digit.
+//                    stack.push(operand);
+//                    n = 0;
+//                    operand = 0;
+//
+//                }
+//                if (ch == '(') {
+//
+//                    int res = evaluateExpr(stack);
+//                    stack.pop();
+//
+//                    // Append the evaluated result to the stack.
+//                    // This result could be of a sub-expression within the parenthesis.
+//                    stack.push(res);
+//
+//                } else {
+//                    // For other non-digits just push onto the stack.
+//                    stack.push(ch);
+//                }
+//            }
+//        }
+//
+//        //Push the last operand to stack, if any.
+//        if (n != 0) {
+//            stack.push(operand);
+//        }
+//
+//        // Evaluate any left overs in the stack.
+//        return evaluateExpr(stack);
+//    }
+//}
 
 // 150. Evaluate Reverse Polish Notation
 //  You are given an array of strings tokens that represents an arithmetic expression in a Reverse Polish Notation.
@@ -1075,42 +1340,16 @@ ListNode *deleteDuplicates(ListNode *head) {
 
     auto dummyHead = new ListNode();
     dummyHead->next = head;
-    auto slow = head;
+    auto cur = dummyHead;
     auto fast = head->next;
-    auto prev = dummyHead;
-
-    while (slow->val == fast->val) {
-        fast = fast->next;
-        if (fast == nullptr) return nullptr;
-        if (fast->val != slow->val) {
-            while (slow != fast) {
-                auto tmp = slow;
-                slow = slow->next;
-                delete tmp;
+    while (cur->next != nullptr && cur->next->next != nullptr) {
+        if (cur->next->val == cur->next->next->val) {
+            auto tmp = cur->next->val;
+            while (cur->next != nullptr && tmp == cur->next->val) {
+                cur->next = cur->next->next;
             }
-            fast = fast->next;
-            prev->next = slow;
-        }
-    }
-
-    while (fast != nullptr) {
-        while (slow->val != fast->val) {
-            slow = slow->next;
-            fast = fast->next;
-            prev = prev->next;
-        }
-        while (slow->val == fast->val) {
-            fast = fast->next;
-            if (fast == nullptr || fast->val != slow->val) {
-                while (slow != fast) {
-                    auto tmp = slow;
-                    slow = slow->next;
-                    delete tmp;
-                }
-                if (fast != nullptr) fast = fast->next;
-                prev->next = slow;
-                if (slow == nullptr) break;
-            }
+        } else {
+            cur = cur->next;
         }
     }
     return dummyHead->next;
@@ -1165,6 +1404,7 @@ public:
 
 std::unordered_map<Node *, Node *> cacheMap;
 
+// recursion
 Node *copyRandomList(Node *head) {
     if (head == nullptr) return nullptr;
     if (!cacheMap.count(head)) {
@@ -1176,6 +1416,9 @@ Node *copyRandomList(Node *head) {
     return cacheMap[head];
 }
 
+// iterative
+// time: O(n)
+// space: O(n)
 Node *copyRandomList2(Node *head) {
     std::unordered_map<Node *, Node *> cacheMap;
     auto tmp = head;
@@ -1194,6 +1437,9 @@ Node *copyRandomList2(Node *head) {
     return cacheMap[head];
 }
 
+// iterative
+// time: O(n)
+// space: O(1)
 Node *copyRandomList3(Node *head) {
     auto tmp = head;
     while (tmp->next != nullptr) {
@@ -1220,7 +1466,250 @@ Node *copyRandomList3(Node *head) {
     return head_new;
 }
 
+// 146. LRU Cache
+//
+//Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
+//
+//Implement the LRUCache class:
+//
+//    LRUCache(int capacity) Initialize the LRU cache with positive size capacity.
+//    int get(int key) Return the value of the key if the key exists, otherwise return -1.
+//    void put(int key, int value) Update the value of the key if the key exists. Otherwise,
+//    add the key-value pair to the cache.
+//    If the number of keys exceeds the capacity from this operation, evict the least recently used key.
+//
+//The functions get and put must each run in O(1) average time complexity.
+//
+//
+//
+//Example 1:
+//
+//Input
+//["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
+//[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
+//Output
+//[null, null, null, 1, null, -1, null, -1, 3, 4]
+//
+//Explanation
+//LRUCache lRUCache = new LRUCache(2);
+//lRUCache.put(1, 1); // cache is {1=1}
+//lRUCache.put(2, 2); // cache is {1=1, 2=2}
+//lRUCache.get(1);    // return 1
+//lRUCache.put(3, 3); // LRU key was 2, evicts key 2, cache is {1=1, 3=3}
+//lRUCache.get(2);    // returns -1 (not found)
+//lRUCache.put(4, 4); // LRU key was 1, evicts key 1, cache is {4=4, 3=3}
+//lRUCache.get(1);    // return -1 (not found)
+//lRUCache.get(3);    // return 3
+//lRUCache.get(4);    // return 4
 
+class LRUCache {
+private:
+    class DoublyLinkedList {
+    public:
+        DoublyLinkedList (int key, int val) {
+            this->val = val;
+            this->key = key;
+        };
+
+        DoublyLinkedList(){};
+
+        int key;
+        int val;
+        DoublyLinkedList* prev;
+        DoublyLinkedList* next;
+    };
+
+    DoublyLinkedList* head;
+    DoublyLinkedList* tail;
+    int capacity;
+    int size;
+    std::unordered_map<int, DoublyLinkedList*> map;
+
+public:
+
+    LRUCache(int capacity) {
+        this->capacity = capacity;
+        this->size = 0;
+        head = new DoublyLinkedList();
+        tail = new DoublyLinkedList();
+        head->next = tail;
+        tail->prev = head;
+    }
+
+    void removeNode(DoublyLinkedList *pList) {
+        pList->next->prev = pList->prev;
+        pList->prev->next = pList->next;
+        pList->next = nullptr;
+        pList->prev = nullptr;
+    }
+
+    void addHead(DoublyLinkedList *pList) {
+        pList->next = head->next;
+        pList->prev = head;
+        head->next->prev = pList;
+        head->next = pList;
+    }
+
+    void moveToHead(DoublyLinkedList *pList) {
+        removeNode(pList);
+        addHead(pList);
+    }
+
+    int get(int key) {
+        if (map.find(key) == map.end()) {
+            return -1;
+        }
+
+        DoublyLinkedList* node = map.at(key);
+        moveToHead(node);
+        return node->val;
+    }
+
+    void removeLastNode() {
+        DoublyLinkedList* node = tail->prev;
+        removeNode(node);
+        map.erase(node->key);
+        --size;
+    }
+
+    void put(int key, int value) {
+
+        // if find the key, update value, move to head
+        if (map.find(key) != map.end()) {
+            DoublyLinkedList* node = map.at(key);
+            node->val = value;
+            moveToHead(node);
+        } else {
+            // if didnt find the key, create new node
+            DoublyLinkedList* node = new DoublyLinkedList(key, value);
+            addHead(node);
+            map.insert({key, node});
+            ++size;
+
+            if (size > capacity) {
+                removeLastNode();
+            }
+        }
+    }
+
+};
+
+// 460. LFU Cache
+//
+//Design and implement a data structure for a Least Frequently Used (LFU) cache.
+//
+//Implement the LFUCache class:
+//
+//    LFUCache(int capacity) Initializes the object with the capacity of the data structure.
+//    int get(int key) Gets the value of the key if the key exists in the cache. Otherwise, returns -1.
+//    void put(int key, int value) Update the value of the key if present, or inserts the key if not already present. When the cache reaches its capacity,
+//    it should invalidate and remove the least frequently used key before inserting a new item.
+//    For this problem, when there is a tie (i.e., two or more keys with the same frequency), the least recently used key would be invalidated.
+//
+// To determine the least frequently used key, a use counter is maintained for each key in the cache.
+// The key with the smallest use counter is the least frequently used key.
+//
+// When a key is first inserted into the cache, its use counter is set to 1 (due to the put operation).
+// The use counter for a key in the cache is incremented either a get or put operation is called on it.
+//
+// The functions get and put must each run in O(1) average time complexity.
+//
+//
+//
+//Example 1:
+//
+//Input
+//["LFUCache", "put", "put", "get", "put", "get", "get", "put", "get", "get", "get"]
+//[[2], [1, 1], [2, 2], [1], [3, 3], [2], [3], [4, 4], [1], [3], [4]]
+//Output
+//[null, null, null, 1, null, -1, 3, null, -1, 3, 4]
+//
+//Explanation
+//// cnt(x) = the use counter for key x
+//// cache=[] will show the last used order for tiebreakers (leftmost element is  most recent)
+//LFUCache lfu = new LFUCache(2);
+//lfu.put(1, 1);   // cache=[1,_], cnt(1)=1
+//lfu.put(2, 2);   // cache=[2,1], cnt(2)=1, cnt(1)=1
+//lfu.get(1);      // return 1
+//                 // cache=[1,2], cnt(2)=1, cnt(1)=2
+//lfu.put(3, 3);   // 2 is the LFU key because cnt(2)=1 is the smallest, invalidate 2.
+//                 // cache=[3,1], cnt(3)=1, cnt(1)=2
+//lfu.get(2);      // return -1 (not found)
+//lfu.get(3);      // return 3
+//                 // cache=[3,1], cnt(3)=2, cnt(1)=2
+//lfu.put(4, 4);   // Both 1 and 3 have the same cnt, but 1 is LRU, invalidate 1.
+//                 // cache=[4,3], cnt(4)=1, cnt(3)=2
+//lfu.get(1);      // return -1 (not found)
+//lfu.get(3);      // return 3
+//                 // cache=[3,4], cnt(4)=1, cnt(3)=3
+//lfu.get(4);      // return 4
+//                 // cache=[4,3], cnt(4)=2, cnt(3)=3
+
+// HashMap<Integer, Pair<Integer, Integer>> cache, keyed by the original key and valued by the frequency-value pair.
+// HashMap<Integer, LinkedListHashSet<Integer>> frequencies, keyed by frequency and valued by the set of keys that have the same frequency.
+// int minf, which is the minimum frequency at any given time.
+// int capacity, which is the capacity given in the input.
+
+class LFUCache {
+    // key: frequency, value: list of original key-value pairs that have the same frequency.
+    unordered_map<int, std::list<pair<int, int>>> frequencies;
+    // key: original key, value: pair of frequency and the iterator corresponding key int the
+    // frequencies map's list.
+    unordered_map<int, pair<int, list<pair<int, int>>::iterator>> cache;
+    int capacity;
+    int minf;
+
+    void insert(int key, int frequency, int value) {
+        frequencies[frequency].push_back({key, value});
+        cache[key] = {frequency, --frequencies[frequency].end()};
+    }
+
+public:
+    LFUCache(int capacity) : capacity(capacity), minf(0) {}
+
+    int get(int key) {
+        const auto it = cache.find(key);
+        if (it == cache.end()) {
+            return -1;
+        }
+        const int f = it->second.first;
+        const auto iter = it->second.second;
+        const pair<int, int> kv = *iter;
+        frequencies[f].erase(iter);
+        if (frequencies[f].empty()){
+            frequencies.erase(f);
+            if(minf == f) {
+                ++minf;
+            }
+        }
+
+        insert(key, f + 1, kv.second);
+        return kv.second;
+    }
+
+    void put(int key, int value) {
+        if (capacity <= 0) {
+            return;
+        }
+        const auto it = cache.find(key);
+        if (it != cache.end()) {
+            it->second.second->second = value;
+            get(key);
+            return;
+        }
+        if (capacity == cache.size()) {
+            cache.erase(frequencies[minf].front().first);
+            frequencies[minf].pop_front();
+
+            if(frequencies[minf].empty()) {
+                frequencies.erase(minf);
+            }
+        }
+
+        minf = 1;
+        insert(key, 1, value);
+    }
+};
 /// Binary Tree
 /// BFS
 // 103. Binary Tree Zigzag Level Order Traversal
@@ -1268,10 +1757,10 @@ std::vector<std::vector<int>> zigzagLevelOrder(TreeNode *root) {
             if (t->left != nullptr) q.push(t->left);
             if (t->right != nullptr) q.push(t->right);
             --size;
-            ++c;
         }
-        if (c % 2 == 0) std::reverse(a.begin(), a.end());
+        if (c % 2 == 1) std::reverse(a.begin(), a.end());
         output.push_back(a);
+        ++c;
     }
     return output;
 }
@@ -1301,6 +1790,169 @@ std::vector<std::vector<int>> LevelOrder(TreeNode *root) {
 
 /// Binary search tree
 /// Graph General
+
+// 399. Evaluate Division
+//
+// You are given an array of variable pairs equations and an array of real numbers values,
+// where equations[i] = [Ai, Bi] and values[i] represent the equation Ai / Bi = values[i].
+// Each Ai or Bi is a string that represents a single variable.
+//
+// You are also given some queries, where queries[j] = [Cj, Dj] represents the jth query where you must find the answer for Cj / Dj = ?.
+//
+// Return the answers to all queries. If a single answer cannot be determined, return -1.0.
+//
+// Note: The input is always valid. You may assume that evaluating the queries will not result in division by zero and that there is no contradiction.
+//
+//
+//
+// Example 1:
+//
+// Input: equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+// Output: [6.00000,0.50000,-1.00000,1.00000,-1.00000]
+// Explanation:
+// Given: a / b = 2.0, b / c = 3.0
+// queries are: a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ?
+// return: [6.0, 0.5, -1.0, 1.0, -1.0 ]
+//
+// Example 2:
+//
+// Input: equations = [["a","b"],["b","c"],["bc","cd"]], values = [1.5,2.5,5.0], queries = [["a","c"],["c","b"],["bc","cd"],["cd","bc"]]
+// Output: [3.75000,0.40000,5.00000,0.20000]
+//
+// Example 3:
+//
+// Input: equations = [["a","b"]], values = [0.5], queries = [["a","b"],["b","a"],["a","c"],["x","y"]]
+// Output: [0.50000,2.00000,-1.00000,-1.00000]
+//
+
+vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+
+}
+
+// 207. Course Schedule
+//
+// There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1.
+// You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+//
+//    For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+//
+//Return true if you can finish all courses. Otherwise, return false.
+//
+//
+//
+//Example 1:
+//
+//Input: numCourses = 2, prerequisites = [[1,0]]
+//Output: true
+//Explanation: There are a total of 2 courses to take.
+//To take course 1 you should have finished course 0. So it is possible.
+//
+//Example 2:
+//
+//Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+//Output: false
+//Explanation: There are a total of 2 courses to take.
+//To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+    if (numCourses == 0) return true;
+    vector<int> inDegree(numCourses,0);
+    vector<vector<int>> graph(numCourses);
+    for (auto elem: prerequisites) {
+        int i = elem[0];
+        int j = elem[1];
+        graph[i].push_back(j);
+        inDegree[j]++;
+    }
+
+    int sum = 0;
+    std::queue<int> q;
+    for (int i = 0; i < inDegree.size(); ++i) {
+        if (inDegree[i] == 0) {
+            q.push(i);
+        }
+    }
+
+    while (!q.empty()) {
+        auto tmp = q.front();
+        q.pop();
+        ++sum;
+        for (auto elem: graph[tmp]) {
+            --inDegree[elem];
+            if (inDegree[elem] == 0) q.push(elem);
+        }
+    }
+    return sum == numCourses;
+}
+
+// 210. Course Schedule II
+//
+// There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1.
+// You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+//
+// For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+//
+// Return the ordering of courses you should take to finish all courses. If there are many valid answers, return any of them. If it is impossible to finish all courses, return an empty array.
+//
+//
+//
+//Example 1:
+//
+//Input: numCourses = 2, prerequisites = [[1,0]]
+//Output: [0,1]
+//Explanation: There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1].
+//
+//Example 2:
+//
+//Input: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
+//Output: [0,2,1,3]
+//Explanation: There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.
+//So one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].
+//
+//Example 3:
+//
+//Input: numCourses = 1, prerequisites = []
+//Output: [0]
+
+// 3, {{0,2},{1,2},{2,0}}
+
+vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+    std::vector<int> output;
+    if (numCourses == 0) return output;
+    vector<int> inDegree(numCourses,0);
+    vector<vector<int>> graph(numCourses);
+    for (auto elem: prerequisites) {
+        int i = elem[0];
+        int j = elem[1];
+        graph[i].push_back(j);
+        inDegree[j]++;
+    }
+
+    int sum = 0;
+    std::queue<int> q;
+    for (int i = 0; i < inDegree.size(); ++i) {
+        if (inDegree[i] == 0) {
+            q.push(i);
+        }
+    }
+
+    while (!q.empty()) {
+        auto tmp = q.front();
+        q.pop();
+        ++sum;
+        output.push_back(tmp);
+        for (auto elem: graph[tmp]) {
+            --inDegree[elem];
+            if (inDegree[elem] == 0) q.push(elem);
+        }
+    }
+
+    if (sum != numCourses) return std::vector<int> {};
+    std::reverse(output.begin(), output.end());
+    return output;
+}
+
+
 /// Graph BFS
 /// Trie
 // 208. Implement Trie (Prefix Tree)
@@ -2724,6 +3376,29 @@ bool isInterLeave(std::string s1, std::string s2, std::string s3) {
     return isInterLeave(s1, 0, s2, 0, "", s3);
 }
 
+// 5. Longest Palindromic Substring
+//
+//Given a string s, return the longest
+//palindromic
+//substring
+//in s.
+//
+//
+//
+//Example 1:
+//
+//Input: s = "babad"
+//Output: "bab"
+//Explanation: "aba" is also a valid answer.
+//
+//Example 2:
+//
+//Input: s = "cbbd"
+//Output: "bb"
+
+string longestPalindrome(string s) {
+
+}
 
 void testing123() {
     isValid("({[)");

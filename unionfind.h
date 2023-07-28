@@ -35,11 +35,11 @@ inline void merge(int i, int j)
     int x = find(i), y = find(j);
     if (x == y) return;
 
-    if ( r_rank[x] <=  r_rank[y])
+    if (r_rank[x] <=  r_rank[y])
         fa[x] = y;
     else
         fa[y] = x;
-    if ( r_rank[x] ==  r_rank[y])
+    if (r_rank[x] ==  r_rank[y])
          r_rank[y]++;
 }
 

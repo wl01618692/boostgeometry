@@ -615,21 +615,20 @@ bool lemonadeChange(std::vector<int>& bills) {
 //    空间复杂度：O(1)，有一个快排，最差情况(倒序)时，需要n次递归调用。因此确实需要O(n)的栈空间
 
 bool mySort(std::vector<int> lhs, std::vector<int> rhs) {
-    if (lhs[0] == rhs[0]) {
-        return lhs[1] < rhs[1];
-    }
+    if (lhs[0] == rhs[0]) return lhs[1] < rhs[1];
     return lhs[0] < rhs[0];
 }
 
-
 int findMinArrowShots(std::vector<std::vector<int>>& points) {
-    int count = 0;
+    if (points.empty()) return 0;
+    if (points.size() <= 1) return points.size();
+    int count = 1;
     std::sort(points.begin(), points.end(), mySort);
     for (int i = 1; i < points.size(); ++i) {
-        if (points[i][0] > points[i - 1][1]) {
+        if (points[i - 1][1] < points[i][0]) {
             ++count;
         } else {
-            points[i][1] = std::min(points[i - 1][1], points[i][1]);
+            points[i][1] = std::min(points[i][1], points[i - 1][1]);
         }
     }
     return count;
