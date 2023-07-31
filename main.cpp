@@ -296,7 +296,9 @@ int main() {
 //    std::vector<std::vector<char>> input200_3 = {{'1','0','0','0','0'}, {'0','1','0','0','0'}, {'0','0','1','0','0'}, {'0','0','0','1','0'}, {'0','0','0','0','1'}};
 //    int count3 = numIslandsBFS(input200_3);
 
-
+    std::map<int, int> m1;
+    m1.insert({1, 2});
+    m1.insert({1, 3});
 
     // '0' => 48
     int tmp = ('8' - '0');

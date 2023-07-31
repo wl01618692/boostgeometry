@@ -1341,7 +1341,6 @@ ListNode *deleteDuplicates(ListNode *head) {
     auto dummyHead = new ListNode();
     dummyHead->next = head;
     auto cur = dummyHead;
-    auto fast = head->next;
     while (cur->next != nullptr && cur->next->next != nullptr) {
         if (cur->next->val == cur->next->next->val) {
             auto tmp = cur->next->val;
@@ -1385,9 +1384,6 @@ ListNode *deleteDuplicates(ListNode *head) {
 //
 // Input: head = [[3,null],[3,0],[3,null]]
 // Output: [[3,null],[3,0],[3,null]]
-
-
-
 
 class Node {
 public:
@@ -1650,9 +1646,31 @@ public:
 // int minf, which is the minimum frequency at any given time.
 // int capacity, which is the capacity given in the input.
 
+//Here, N is the total number of operations.
+//
+// Time complexity: O(1), as required by the question.
+//
+//Since we only have basic HashMap/(Linked)HashSet operations. For details,
+//
+//Our utility function insert puts the key- value pair into the cache, queries and possibly puts an empty LinedHashSet in the frequencies,
+// then queries frequencies again and adds a key into the associated value which is a LinkedHashSet.
+// All the operations are based on the hash calculating for simple type (int or Integer) and the time complexity is constant.
+//
+//For each get operation, in the worst case, we query the frequencies and remove a key from the associated value which is a LinkedHashSet and call insert function once.
+// All the operations have the constant time complexity based on the hash calculating for simple type.
+//
+//For each put operation, in the simple case we just insert the new key-value pair into the cache and call get function once.
+// In the worst case, we query the frequencies to get the associated value, namely all the keys with the same frequencies which is a LinkedHashSet.
+// And then we get the first key from the LinkedHashSet, remove it from both cache and frequencies.
+// All the operations have the constant time complexity based on the hash calculating for simple type.
+//
+//    Space complexity: O(N).
+//
+//    We save all the key-value pairs as well as all the keys with frequencies in the 2 HashMaps (plus a LinkedHashSet), so there are at most $min(N, capacity) keys and values at any given time.
+
 class LFUCache {
     // key: frequency, value: list of original key-value pairs that have the same frequency.
-    unordered_map<int, std::list<pair<int, int>>> frequencies;
+    unordered_map<int, list<pair<int, int>>> frequencies;
     // key: original key, value: pair of frequency and the iterator corresponding key int the
     // frequencies map's list.
     unordered_map<int, pair<int, list<pair<int, int>>::iterator>> cache;
@@ -1698,7 +1716,7 @@ public:
             return;
         }
         if (capacity == cache.size()) {
-            cache.erase(frequencies[minf].front().first);
+            cache.erase(frequencies[minf].front().first); // cache erase key
             frequencies[minf].pop_front();
 
             if(frequencies[minf].empty()) {
@@ -1765,6 +1783,33 @@ std::vector<std::vector<int>> zigzagLevelOrder(TreeNode *root) {
     return output;
 }
 
+class Solution {
+protected void DFS(TreeNode node, int level, List<List<Integer>> results) {
+        if (level >= results.size()) {
+            LinkedList<Integer> newLevel = new LinkedList<Integer>();
+            newLevel.add(node.val);
+            results.add(newLevel);
+        } else {
+            if (level % 2 == 0)
+                results.get(level).add(node.val);
+            else
+                results.get(level).add(0, node.val);
+        }
+
+        if (node.left != null) DFS(node.left, level + 1, results);
+        if (node.right != null) DFS(node.right, level + 1, results);
+    }
+
+public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<List<Integer>>();
+        }
+        List<List<Integer>> results = new ArrayList<List<Integer>>();
+        DFS(root, 0, results);
+        return results;
+    }
+}
+
 std::vector<std::vector<int>> LevelOrder(TreeNode *root) {
     std::queue<TreeNode *> q;
     std::vector<std::vector<int>> output;
@@ -1826,9 +1871,87 @@ std::vector<std::vector<int>> LevelOrder(TreeNode *root) {
 //
 
 vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+//    std::map<std::string, std::map<std::string, double>> g;
+//    for (int i = 0; i < equations.size(); ++i) {
+//        std::vector<std::string> equation = equations[i];
+//        std::string dividend = equation[0];
+//        std::string divisor = equation[1];
+//        double quotient = values[i];
+//        g[dividend] = {divisor, quotient};
+//        g[divisor] = {dividend, 1 / quotient};
+//    }
+     std::vector<std::vector<int>> matrix;
+
 
 }
 
+class Solution {
+public double[] calcEquation(List<List<String>> equations, double[] values,
+    List<List<String>> queries) {
+
+        HashMap<String, HashMap<String, Double>> graph = new HashMap<>();
+
+        // Step 1). build the graph from the equations
+        for (int i = 0; i < equations.size(); i++) {
+            List<String> equation = equations.get(i);
+            String dividend = equation.get(0), divisor = equation.get(1);
+            double quotient = values[i];
+
+            if (!graph.containsKey(dividend))
+                graph.put(dividend, new HashMap<String, Double>());
+            if (!graph.containsKey(divisor))
+                graph.put(divisor, new HashMap<String, Double>());
+
+            graph.get(dividend).put(divisor, quotient);
+            graph.get(divisor).put(dividend, 1 / quotient);
+        }
+
+        // Step 2). Evaluate each query via bactracking (DFS)
+        // by verifying if there exists a path from dividend to divisor
+        double[] results = new double[queries.size()];
+        for (int i = 0; i < queries.size(); i++) {
+            List<String> query = queries.get(i);
+            String dividend = query.get(0), divisor = query.get(1);
+
+            if (!graph.containsKey(dividend) || !graph.containsKey(divisor))
+                results[i] = -1.0;
+            else if (dividend == divisor)
+                results[i] = 1.0;
+            else {
+                HashSet<String> visited = new HashSet<>();
+                results[i] = backtrackEvaluate(graph, dividend, divisor, 1, visited);
+            }
+        }
+
+        return results;
+    }
+
+private double backtrackEvaluate(HashMap<String, HashMap<String, Double>> graph, String currNode, String targetNode, double accProduct, Set<String> visited) {
+
+        // mark the visit
+        visited.add(currNode);
+        double ret = -1.0;
+
+        Map<String, Double> neighbors = graph.get(currNode);
+        if (neighbors.containsKey(targetNode))
+            ret = accProduct * neighbors.get(targetNode);
+        else {
+            for (Map.Entry<String, Double> pair : neighbors.entrySet()) {
+                String nextNode = pair.getKey();
+                if (visited.contains(nextNode))
+                    continue;
+                ret = backtrackEvaluate(graph, nextNode, targetNode,
+                                        accProduct * pair.getValue(), visited);
+                if (ret != -1.0)
+                    break;
+            }
+        }
+
+        // unmark the visit, for the next backtracking
+        visited.remove(currNode);
+        return ret;
+    }
+}
 // 207. Course Schedule
 //
 // There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1.

@@ -148,15 +148,15 @@ public:
 
     void Reverse() {
         if (_head->next == nullptr) return;
-        LinkedNode* tmp = nullptr;
-        LinkedNode* tmp_next = _head;
-        while (tmp_next != nullptr) {
-            auto tmp_save = tmp_next->next;
-            tmp_next->next = tmp;
-            tmp = tmp_next;
-            tmp_next = tmp_save;
+        LinkedNode* prev = nullptr;
+        LinkedNode* cur = _head;
+        while (cur != nullptr) {
+            auto next = cur->next;
+            cur->next = prev;
+            prev = cur;
+            cur = next;
         }
-        _head = tmp;
+        _head = prev;
     }
 
     /// lc 92
@@ -348,10 +348,10 @@ public:
         auto tmp = head;
         LinkedNode* dummyHead;
         while (tmp != nullptr) {
-            if (length == (k - 1)) dummyHead = tmp;
             tmp = tmp->next;
             length++;
         }
+        if (length % (k - 1) == 0) dummyHead = tmp;
 
         tmp = head;
         while (length >= k) {
