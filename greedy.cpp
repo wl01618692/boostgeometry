@@ -398,6 +398,10 @@ int lc105(std::vector<int> nums, int k) {
 //
 //    解释: 你不能从 0 号或 1 号加油站出发，因为没有足够的汽油可以让你行驶到下一个加油站。我们从 2 号加油站出发，可以获得 4 升汽油。 此时油箱有 = 0 + 4 = 4 升汽油。开往 0 号加油站，此时油箱有 4 - 3 + 2 = 3 升汽油。开往 1 号加油站，此时油箱有 3 - 3 + 3 = 3 升汽油。你无法返回 2 号加油站，因为返程需要消耗 4 升汽油，但是你的油箱只有 3 升汽油。因此，无论怎样，你都不可能绕环路行驶一周。
 //
+
+// Brute force
+// 时间复杂度：O(n^2)
+// 空间复杂度：O(1)
 int canCompleteCircuit(std::vector<int>& gas, std::vector<int>& cost) {
     int n = gas.size();
     if (n == 0) return -1;
@@ -413,7 +417,38 @@ int canCompleteCircuit(std::vector<int>& gas, std::vector<int>& cost) {
     return -1;
 }
 
-class Solution {
+// Greedy
+// 时间复杂度：O(n)
+// 空间复杂度：O(1)
+class Solution1 {
+public:
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        int curSum = 0;
+        int min = INT32_MAX; // 从起点出发，油箱里的油量最小值
+        for (int i = 0; i < gas.size(); i++) {
+            int rest = gas[i] - cost[i];
+            curSum += rest;
+            if (curSum < min) {
+                min = curSum;
+            }
+        }
+        if (curSum < 0) return -1;  // 情况1
+        if (min >= 0) return 0;     // 情况2
+        // 情况3
+        for (int i = gas.size() - 1; i >= 0; i--) {
+            int rest = gas[i] - cost[i];
+            min += rest;
+            if (min >= 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+};
+
+// 时间复杂度：O(n)
+// 空间复杂度：O(1)
+class Solution2 {
 public:
     int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
         int currGain = 0, totalGain = 0, answer = 0;

@@ -483,24 +483,6 @@ string intToRoman(int num) {
 //
 //Do not allocate extra space for another array. You must do this by modifying the input array in-place with O(1) extra memory.
 //
-//Custom Judge:
-//
-//The judge will test your solution with the following code:
-//
-//int[] nums = [...]; // Input array
-//int[] expectedNums = [...]; // The expected answer with correct length
-//
-//int k = removeDuplicates(nums); // Calls your implementation
-//
-//assert k == expectedNums.length;
-//for (int i = 0; i < k; i++) {
-//    assert nums[i] == expectedNums[i];
-//}
-//
-//If all assertions pass, then your solution will be accepted.
-//
-//
-//
 //Example 1:
 //
 //Input: nums = [1,1,1,2,2,3]
@@ -926,7 +908,33 @@ vector<string> summaryRanges(vector<int> &nums) {
 //
 
 vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
-
+    int left = newInterval[0];
+    int right = newInterval[1];
+    bool placed = false;
+    vector<vector<int>> ans;
+    for (const auto& interval: intervals) {
+        if (interval[0] > right) {
+            // 在插入区间的右侧且无交集
+            if (!placed) {
+                ans.push_back({left, right});
+                placed = true;
+            }
+            ans.push_back(interval);
+        }
+        else if (interval[1] < left) {
+            // 在插入区间的左侧且无交集
+            ans.push_back(interval);
+        }
+        else {
+            // 与插入区间有交集，计算它们的并集
+            left = min(left, interval[0]);
+            right = max(right, interval[1]);
+        }
+    }
+    if (!placed) {
+        ans.push_back({left, right});
+    }
+    return ans;
 }
 
 /// Stack
@@ -1728,6 +1736,50 @@ public:
         insert(key, 1, value);
     }
 };
+
+class LFUCache123 {
+private:
+    unordered_map<int, list<pair<int, int>>> frequency_map;
+    unordered_map<int, pair<int, list<pair<int, int>>::iterator>> key_map;
+    int _capacity;
+    int _minf = 0;
+
+    void insert(int key, int frequency, int value) {
+        frequency_map[frequency].push_back({key, value});
+        key_map[key] = {frequency, --frequency_map[frequency].end()};
+    }
+
+public:
+    LFUCache123(int capacity) {
+        _capacity = capacity;
+    }
+
+    int get(int key) {
+        auto itr = key_map.find(key);
+        if (itr ==  key_map.end()) {
+            return -1;
+        }
+        int f = itr->second.first;
+        auto kv = itr->second.second;
+        frequency_map[f].erase(itr->second.second);
+        if (frequency_map[f].empty()) {
+            frequency_map.erase(f);
+            if (f == _minf) {
+                _minf++;
+            }
+        }
+
+        insert(kv->first, f + 1, kv->second);
+        return kv->second;
+    }
+
+    void put(int key, int value) {
+        auto itr = key_map.find(key);
+        if (itr != key_map.end()) {
+
+        }
+    }
+};
 /// Binary Tree
 /// BFS
 // 103. Binary Tree Zigzag Level Order Traversal
@@ -1781,33 +1833,6 @@ std::vector<std::vector<int>> zigzagLevelOrder(TreeNode *root) {
         ++c;
     }
     return output;
-}
-
-class Solution {
-protected void DFS(TreeNode node, int level, List<List<Integer>> results) {
-        if (level >= results.size()) {
-            LinkedList<Integer> newLevel = new LinkedList<Integer>();
-            newLevel.add(node.val);
-            results.add(newLevel);
-        } else {
-            if (level % 2 == 0)
-                results.get(level).add(node.val);
-            else
-                results.get(level).add(0, node.val);
-        }
-
-        if (node.left != null) DFS(node.left, level + 1, results);
-        if (node.right != null) DFS(node.right, level + 1, results);
-    }
-
-public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
-        if (root == null) {
-            return new ArrayList<List<Integer>>();
-        }
-        List<List<Integer>> results = new ArrayList<List<Integer>>();
-        DFS(root, 0, results);
-        return results;
-    }
 }
 
 std::vector<std::vector<int>> LevelOrder(TreeNode *root) {
@@ -3027,7 +3052,7 @@ int findKthLargest(std::vector<int> &nums, int k) {
 //medianFinder.findMedian(); // return 2.0
 //
 //
-//
+// 1 4 2
 //Constraints:
 //
 //    -105 <= num <= 105
@@ -3480,25 +3505,65 @@ int minDistance(std::string word1, std::string word2) {
 //Input: s1 = "", s2 = "", s3 = ""
 //Output: true
 
+// Brute force
+// Time complexity : O(2^{m+n}). m is the length of s1 and n is the length of s2.
+// Space complexity : O(m+n) The size of stack for recursive calls can go upto m+n.
+//
 bool isInterLeave(std::string s1, int i, std::string s2, int j, std::string res, std::string s3) {
     if (res == s3 && i == s1.size() && j == s2.size()) return true;
     bool ans = false;
 
     if (i < s1.size()) {
         ans |= isInterLeave(s1, i + 1, s2, j, res + s1[i], s3);
+        if (ans) return ans;
     }
 
     if (j < s2.size()) {
         ans |= isInterLeave(s1, i, s2, j + 1, res + s2[j], s3);
+        if (ans) return ans;
     }
     return ans;
 }
 
 bool isInterLeave(std::string s1, std::string s2, std::string s3) {
+    if (s1.empty() && s2.empty() && s3.empty()) return true;
     if ((s1.size() + s2.size()) == s3.size()) return false;
     return isInterLeave(s1, 0, s2, 0, "", s3);
 }
 
+// recursion with memoization
+public class Solution {
+public boolean is_Interleave(String s1, int i, String s2, int j, String s3, int k, int[][] memo) {
+        if (i == s1.length()) {
+            return s2.substring(j).equals(s3.substring(k));
+        }
+        if (j == s2.length()) {
+            return s1.substring(i).equals(s3.substring(k));
+        }
+        if (memo[i][j] >= 0) {
+            return memo[i][j] == 1 ? true : false;
+        }
+        boolean ans = false;
+        if (s3.charAt(k) == s1.charAt(i) && is_Interleave(s1, i + 1, s2, j, s3, k + 1, memo)
+            || s3.charAt(k) == s2.charAt(j) && is_Interleave(s1, i, s2, j + 1, s3, k + 1, memo)) {
+            ans = true;
+        }
+        memo[i][j] = ans ? 1 : 0;
+        return ans;
+    }
+public boolean isInterleave(String s1, String s2, String s3) {
+        if (s1.length() + s2.length() != s3.length()) {
+            return false;
+        }
+        int memo[][] = new int[s1.length()][s2.length()];
+        for (int i = 0; i < s1.length(); i++) {
+            for (int j = 0; j < s2.length(); j++) {
+                memo[i][j] = -1;
+            }
+        }
+        return is_Interleave(s1, 0, s2, 0, s3, 0, memo);
+    }
+}
 // 5. Longest Palindromic Substring
 //
 //Given a string s, return the longest
@@ -3520,6 +3585,7 @@ bool isInterLeave(std::string s1, std::string s2, std::string s3) {
 //Output: "bb"
 
 string longestPalindrome(string s) {
+    int mid = s.size() / 2;
 
 }
 
